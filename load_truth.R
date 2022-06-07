@@ -11,14 +11,14 @@ load_reporting_triangle <- function(as_of) {
   ),
   simplifyDataFrame = TRUE, flatten = TRUE
   )
-  
+
   # get sha of latest commit on the given date
   sha <- commits %>%
     mutate(date = as.Date(commit.author.date)) %>%
     filter(date == as_of) %>%
     filter(commit.author.date == max(commit.author.date)) %>%
     pull(sha)
-  
+
   # load the corresponding data
   read_csv(paste0(
     "https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/",
@@ -30,16 +30,16 @@ load_reporting_triangle <- function(as_of) {
 
 load_truth <- function(as_of) {
   df <- load_reporting_triangle(as_of)
-  
+
   # rowwise sum to aggregate the corrections across all delays
   df <- df %>%
-    mutate(value = rowSums(across(starts_with("value")), na.rm = TRUE)) 
-  
+    mutate(value = rowSums(across(starts_with("value")), na.rm = TRUE))
+
   # compute 7-day rolling sum within each stratum
-  df %>% 
-    group_by(location, age_group) %>% 
-    mutate(truth = sum_run(value, 7, na_pad = TRUE)) %>% 
-    select(date, location, age_group, truth) %>% 
+  df %>%
+    group_by(location, age_group) %>%
+    mutate(truth = sum_run(value, 7, na_pad = TRUE)) %>%
+    select(date, location, age_group, truth) %>%
     drop_na()
 }
 
