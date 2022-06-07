@@ -44,3 +44,39 @@ load_truth <- function(as_of) {
 }
 
 # df_truth <- load_truth("2022-02-27")
+
+
+### Functions to load "frozen" truth values
+
+INDICES_FROZEN <- lower.tri(diag(7), diag = TRUE)[7:1, ]
+
+frozen_sum <- function(df) {
+  if (nrow(df) != 7) {
+    return(NA)
+  } else {
+    values <- df %>%
+      ungroup() %>%
+      select(value_0d:value_6d)
+
+    sum(values[INDICES_FROZEN])
+  }
+}
+
+load_frozen_truth <- function(start_date = "2021-11-01") {
+  df <- read_csv("../hospitalization-nowcast-hub/data-truth/COVID-19/COVID-19_hospitalizations.csv",
+    show_col_types = FALSE
+  ) %>%
+    filter(date >= start_date)
+
+  df <- df %>%
+    group_by(location, age_group) %>%
+    # arrange(date) %>%
+    run_by(idx = "date", k = "7 days") %>%
+    mutate(frozen_value = runner(x = ., f = function(x) {
+      frozen_sum(x)
+    })) %>%
+    select(c(date, location, age_group, frozen_value)) %>%
+    drop_na()
+}
+
+# truth_frozen <- load_frozen_truth("2021-11-01")
