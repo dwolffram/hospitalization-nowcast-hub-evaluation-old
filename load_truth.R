@@ -48,21 +48,27 @@ load_truth <- function(as_of) {
 
 ### Functions to load "frozen" truth values
 
-INDICES_FROZEN <- lower.tri(diag(7), diag = TRUE)[7:1, ]
+make_frozen_indices <- function(lead_time = 0) {
+  m <- matrix(NA, nrow = 7, ncol = 7 + lead_time)
+  m <- col(m) <= row(m) + lead_time
+  m[7:1, ]
+}
 
-frozen_sum <- function(df) {
+frozen_sum <- function(df, indices_frozen) {
   if (nrow(df) != 7) {
     return(NA)
   } else {
     values <- df %>%
       ungroup() %>%
-      select(value_0d:value_6d)
+      select(paste0("value_", 0:(ncol(indices_frozen) - 1), "d"))
 
-    sum(values[INDICES_FROZEN])
+    sum(values[indices_frozen])
   }
 }
 
-load_frozen_truth <- function(start_date = "2021-11-01") {
+load_frozen_truth <- function(lead_time = 0, start_date = "2021-11-01") {
+  indices_frozen <- make_frozen_indices(lead_time)
+
   df <- read_csv("../hospitalization-nowcast-hub/data-truth/COVID-19/COVID-19_hospitalizations.csv",
     show_col_types = FALSE
   ) %>%
@@ -70,13 +76,14 @@ load_frozen_truth <- function(start_date = "2021-11-01") {
 
   df <- df %>%
     group_by(location, age_group) %>%
-    # arrange(date) %>%
     run_by(idx = "date", k = "7 days") %>%
     mutate(frozen_value = runner(x = ., f = function(x) {
-      frozen_sum(x)
+      frozen_sum(x, indices_frozen)
     })) %>%
     select(c(date, location, age_group, frozen_value)) %>%
     drop_na()
 }
 
-# truth_frozen <- load_frozen_truth("2021-11-01")
+# truth_frozen <- load_frozen_truth(0, "2021-11-01")
+# truth_frozen2 <- load_frozen_truth(2, "2021-11-01")
+# truth_frozen14 <- load_frozen_truth(14, "2021-11-01")
