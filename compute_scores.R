@@ -14,13 +14,10 @@ score <- function(prediction, observation, type, quantile) {
 }
 
 END_DATE <- "2022-04-29"
-EVAL_DATE <- "2022-07-17"
+EVAL_DATE <- "2022-08-02"
 
-df <- read_csv(paste0("data/submissions_", EVAL_DATE, ".csv.gz")) %>% 
-  filter(forecast_date <= EVAL_DATE)
-
-
-df <- read_csv(paste0("data/submissions_", END_DATE, ".csv.gz"))
+# df <- read_csv(paste0("data/submissions_", END_DATE, ".csv.gz"))
+df <- read_csv(paste0("data/submissions_", END_DATE, "_filled.csv.gz"))
 df_truth <- load_truth(as_of = EVAL_DATE)
 
 df <- df %>%
@@ -30,4 +27,4 @@ df <- df %>%
   rowwise() %>%
   mutate(score = score(value, truth, type, quantile))
 
-write_csv(df, paste0("data/scores_", END_DATE, "_", EVAL_DATE, ".csv.gz"))
+write_csv(df, paste0("data/scores_", END_DATE, "_", EVAL_DATE, "_filled.csv.gz"))
