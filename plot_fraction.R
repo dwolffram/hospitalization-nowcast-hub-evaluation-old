@@ -24,23 +24,29 @@ df <- df %>%
   filter(date <= "2022-05-10")
 
 df_states <- df %>% 
-  filter(age_group == "00+")
+  filter(age_group == "00+",
+         location != "DE")
 
 df_age <- df %>% 
-  filter(location == "DE")
+  filter(location == "DE",
+         age_group != "00+")
 
 ggplot(df_states, aes(x = date, y = value, color = d, group = d)) +
   facet_wrap("location", scales = "free") +
   geom_line()
 
 ggplot(df_states, aes(x = date, y = value, fill = fct_reorder(d, value, .desc = TRUE)), group = d) +
-  facet_wrap("location", scales = "free") +
+  facet_wrap("location", scales = "free_y") +
   geom_area(position = "identity") +
   scale_fill_viridis_d(direction = 1) +
   theme_bw() +
   labs(x = NULL,
        y = "7-day hospitalization incidence",
-       fill = "Days after initial report")
+       fill = "Days after\ninitial report") +
+  scale_x_date(date_breaks = "3 months", minor_breaks = "1 month", date_labels =  "%b %Y") 
+
+ggsave("figures/fraction_absolute_time_states.pdf", width = 300, height = 250, unit = "mm", device = "pdf")
+
 
 
 df_fraction_states <- df_states %>% 
@@ -52,34 +58,35 @@ df_fraction_states <- df_states %>%
 #   summarize(m = max(date))
 
 ggplot(df_fraction_states, aes(x = date, y = value, fill = fct_reorder(d, value, .desc = TRUE)), group = d) +
-  facet_wrap("location", scales = "free") +
+  facet_wrap("location", scales = "fixed") +
   geom_area(position = "identity") +
   scale_fill_viridis_d(direction = 1) +
   theme_bw() +
   labs(x = NULL,
-       y = "7-day hospitalization incidence",
-       fill = "Days after initial report")
+       y = "Fraction of final report",
+       fill = "Days after\ninitial report") +
+  scale_x_date(date_breaks = "3 months", minor_breaks = "1 month", date_labels =  "%b %Y") 
+
+ggsave("figures/fraction_time_states.pdf", width = 300, height = 250, unit = "mm", device = "pdf")
 
 
-df_fraction <- df_states %>% 
-  group_by(location, date) %>% 
-  mutate(value = value/max(value)) %>% 
-  group_by(location, d) %>% 
-  summarize(value = mean(value))
-
-df_fraction <- df_fraction %>% 
-  mutate(d = fct_reorder(d, value, .desc = TRUE)) %>% 
-  arrange(d)
-
-ggplot(df_fraction, aes(x = location, y = value, fill = d)) +
-  geom_bar(stat = "identity", position = "identity") +
-  scale_fill_viridis_d(direction = 1) +
-  theme_bw() +
-  labs(x = NULL,
-       y = "7-day hospitalization incidence",
-       fill = "Days after initial report")
-
-
+# df_fraction <- df_states %>% 
+#   group_by(location, date) %>% 
+#   mutate(value = value/max(value)) %>% 
+#   group_by(location, d) %>% 
+#   summarize(value = mean(value))
+# 
+# df_fraction <- df_fraction %>% 
+#   mutate(d = fct_reorder(d, value, .desc = TRUE)) %>% 
+#   arrange(d)
+# 
+# ggplot(df_fraction, aes(x = location, y = value, fill = d)) +
+#   geom_bar(stat = "identity", position = "identity") +
+#   scale_fill_viridis_d(direction = 1) +
+#   theme_bw() +
+#   labs(x = NULL,
+#        y = "7-day hospitalization incidence",
+#        fill = "Days after initial report")
 
 
 
@@ -103,10 +110,10 @@ ggplot(df_fraction, aes(x = fct_reorder(location, value, .fun = min, .desc = TRU
     panel.grid.minor = element_line(size = 0.05)
   ) +
   labs(x = NULL,
-       y = "Fraction of final hosp. inc.",
+       y = "Fraction of final report",
        fill = "Days after\ninitial report") 
 
-ggsave("figures/fraction_by_state.pdf", width = 160, height = 110, unit = "mm", device = "pdf")
+ggsave("figures/fraction_state.pdf", width = 200, height = 120, unit = "mm", device = "pdf")
 
 
 
@@ -117,14 +124,71 @@ df_fraction <- df_fraction %>%
 ggplot(df_fraction, aes(x = d, y = value, color = location, group = location)) +
   geom_line() +
   ylim(c(0, 1)) +
-  theme_bw(base_size = 11) +
+  theme_bw() +
   theme(
     panel.grid.major = element_line(size = 0.05),
     panel.grid.minor = element_line(size = 0.05)
   ) +
   labs(x = "Days after initial report",
-       y = "Fraction of final hosp. inc.",
-       color = NULL) 
+       y = "Fraction of final report",
+       color = "State") 
 
-ggsave("figures/fraction_by_state_over_time.pdf", width = 160, height = 110, unit = "mm", device = "pdf")
+ggsave("figures/fraction_line_state.pdf", width = 200, height = 120, unit = "mm", device = "pdf")
 
+
+### BY AGE GROUP
+
+df_fraction_age <- df_age %>% 
+  group_by(age_group, date) %>% 
+  mutate(value = value/max(value))
+
+ggplot(df_age, aes(x = date, y = value, fill = fct_reorder(d, value, .desc = TRUE)), group = d) +
+  facet_wrap("age_group", scales = "free_y") +
+  geom_area(position = "identity") +
+  scale_fill_viridis_d(direction = 1) +
+  theme_bw() +
+  labs(x = NULL,
+       y = "7-day hospitalization incidence",
+       fill = "Days after\ninitial report") +
+  scale_x_date(date_breaks = "3 months", minor_breaks = "1 month", date_labels =  "%b %Y") 
+
+ggsave("figures/fraction_absolute_time_age.pdf", width = 300, height = 200, unit = "mm", device = "pdf")
+
+
+ggplot(df_fraction_age, aes(x = date, y = value, fill = fct_reorder(d, value, .desc = TRUE)), group = d) +
+  facet_wrap("age_group", scales = "fixed") +
+  geom_area(position = "identity") +
+  scale_fill_viridis_d(direction = 1) +
+  theme_bw() +
+  labs(x = NULL,
+       y = "Fraction of final report",
+       fill = "Days after\ninitial report") +
+  scale_x_date(date_breaks = "3 months", minor_breaks = "1 month", date_labels =  "%b %Y") 
+
+ggsave("figures/fraction_time_age.pdf", width = 300, height = 200, unit = "mm", device = "pdf")
+
+
+df_fraction <- df_age %>% 
+  group_by(age_group, d) %>% 
+  summarize(value = sum(value)) %>% 
+  group_by(age_group) %>% 
+  mutate(value = value/max(value))
+
+df_fraction <- df_fraction %>% 
+  mutate(d = fct_reorder(d, value, .desc = TRUE)) %>% 
+  arrange(d)
+
+
+ggplot(df_fraction, aes(x = age_group, y = value, fill = d)) +
+  geom_bar(stat = "identity", position = "identity") +
+  scale_fill_viridis_d(direction = 1) +
+  theme_bw() +
+  theme(
+    panel.grid.major = element_line(size = 0.05),
+    panel.grid.minor = element_line(size = 0.05)
+  ) +
+  labs(x = NULL,
+       y = "Fraction of final report",
+       fill = "Days after\ninitial report") 
+
+ggsave("figures/fraction_age.pdf", width = 200, height = 120, unit = "mm", device = "pdf")
