@@ -97,7 +97,7 @@ ggplot(df_age, aes(x = date, y = value, fill = fct_reorder(d, value, .desc = TRU
   ) +
   scale_x_date(date_breaks = "2 months", minor_breaks = "1 month", date_labels = "%b %Y")
 
-ggsave("figures/fraction_absolute_time_age.pdf", width = 300, height = 250, unit = "mm", device = "pdf")
+ggsave("figures/fraction_absolute_time_age.pdf", width = 300, height = 200, unit = "mm", device = "pdf")
 
 
 ### PERCENTAGE (OVER TIME)
