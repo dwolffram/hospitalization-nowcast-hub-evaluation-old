@@ -1,6 +1,6 @@
 source("load_truth.R")
 
-# simple implementation of quantile score
+# Quantile score
 qs <- function(q, y, alpha) {
   (as.numeric(y < q) - alpha) * (q - y)
 }
@@ -13,11 +13,11 @@ score <- function(prediction, observation, type, quantile) {
   }
 }
 
-END_DATE <- "2022-04-29"
-EVAL_DATE <- "2022-08-02"
+START_DATE <- "2021-11-22" # first submission
+END_DATE <- "2022-04-29" # last submission
+EVAL_DATE <- "2022-08-08" # date of truth data
 
-# df <- read_csv(paste0("data/submissions_", END_DATE, ".csv.gz"))
-df <- read_csv(paste0("data/submissions_", END_DATE, "_filled.csv.gz"))
+df <- read_csv(paste0("data/submissions_", START_DATE, "_", END_DATE, ".csv.gz"))
 df_truth <- load_truth(as_of = EVAL_DATE)
 
 df <- df %>%
@@ -27,4 +27,11 @@ df <- df %>%
   rowwise() %>%
   mutate(score = score(value, truth, type, quantile))
 
-write_csv(df, paste0("data/scores_", END_DATE, "_", EVAL_DATE, "_filled.csv.gz"))
+write_csv(df, paste0("data/scores_", START_DATE, "_", END_DATE, ".csv.gz"))
+
+# Aggregate scores
+df <- df %>%
+  group_by(model, location, age_group, target, type) %>%
+  summarize(score = mean(score))
+
+write_csv(df, paste0("data/scores_", START_DATE, "_", END_DATE, "_aggregated.csv.gz"))

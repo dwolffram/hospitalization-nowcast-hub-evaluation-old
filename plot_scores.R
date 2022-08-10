@@ -51,7 +51,7 @@ wrap_elements(p1 + p2 + plot_annotation(title = "National level") & theme(plot.t
   wrap_elements(p3 + p4 + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5))) /
   wrap_elements(p5 + p6 + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5)))
 
-ggsave("figures/quantile_scores.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
+ggsave("figures/scores_qs.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
 
 # Absolute errors
@@ -67,4 +67,4 @@ wrap_elements(p1 + p2 + plot_annotation(title = "National level") & theme(plot.t
   wrap_elements(p3 + p4 + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5))) /
   wrap_elements(p5 + p6 + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5)))
 
-ggsave("figures/absolute_errors.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
+ggsave("figures/scores_ae.pdf", width = 300, height = 350, unit = "mm", device = "pdf")

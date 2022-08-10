@@ -63,11 +63,12 @@ filter_scores <- function(df, type = "quantile", level = "national", by_horizon 
 }
 
 
-load_scores <- function(aggregate_scores = FALSE, shorten_names = TRUE) {
+load_scores <- function(start_date = "2021-11-22", end_date = "2022-04-29",
+                        aggregate_scores = FALSE, shorten_names = TRUE) {
   if (aggregate_scores) {
-    df <- read_csv(paste0("data/scores_2022-08-08.csv.gz"))
+    df <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_aggregated.csv.gz"))
   } else {
-    df <- read_csv(paste0("data/scores_2022-04-29_2022-08-02_filled.csv.gz"))
+    df <- read_csv(paste0("data/scores_", start_date, "_", end_date, ".csv.gz"))
   }
 
   if (shorten_names) {
