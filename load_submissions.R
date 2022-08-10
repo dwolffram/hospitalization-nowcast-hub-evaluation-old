@@ -104,3 +104,6 @@ for (i in 1:nrow(d)) {
 }
 
 write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, ".csv.gz"))
+
+# View(subset(df, model == "RKI-weekly_report" & forecast_date == "2021-11-24"))
+

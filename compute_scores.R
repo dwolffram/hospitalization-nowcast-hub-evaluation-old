@@ -18,6 +18,12 @@ END_DATE <- "2022-04-29" # last submission
 EVAL_DATE <- "2022-08-08" # date of truth data
 
 df <- read_csv(paste0("data/submissions_", START_DATE, "_", END_DATE, ".csv.gz"))
+
+# Add baseline
+df_baseline <- read_csv(paste0("data/submissions_KIT-frozen_baseline.csv.gz")) %>% 
+  mutate(retrospective = FALSE)
+df <- bind_rows(df, df_baseline)
+
 df_truth <- load_truth(as_of = EVAL_DATE)
 
 df <- df %>%
@@ -35,3 +41,26 @@ df <- df %>%
   summarize(score = mean(score))
 
 write_csv(df, paste0("data/scores_", START_DATE, "_", END_DATE, "_aggregated.csv.gz"))
+
+unique(df$model)
+
+### FROZEN BASELINE
+
+df <- read_csv(paste0("data/submissions_KIT-frozen_baseline.csv.gz"))
+df_truth <- load_truth(as_of = EVAL_DATE)
+
+df <- df %>%
+  left_join(df_truth, by = c("location", "age_group", "target_end_date" = "date"))
+
+df <- df %>%
+  rowwise() %>%
+  mutate(score = score(value, truth, type, quantile))
+
+write_csv(df, paste0("data/scores_KIT-frozen_baseline.csv.gz"))
+
+# Aggregate scores
+df <- df %>%
+  group_by(model, location, age_group, target, type) %>%
+  summarize(score = mean(score))
+
+write_csv(df, paste0("data/scores_KIT-frozen_baseline_aggregated.csv.gz"))

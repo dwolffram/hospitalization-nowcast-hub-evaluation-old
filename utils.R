@@ -1,12 +1,12 @@
 SHORT_NAMES <- c(
-  "Epiforecasts", "ILM", "KIT-simple_nowcast",
+  "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT-simple_nowcast",
   "LMU", "MeanEnsemble", "MedianEnsemble",
   "RIVM", "RKI", "SU", "SZ"
 )
 
 MODEL_COLORS <- setNames(
-  c("#999999", "#E69F00", "#56B4E9", "#F0E442", "#009E73", "#60D1B3", "#D55E00", "#3C4AAD", "#CC79A7", "#000000"),
-  c("Epiforecasts", "ILM", "KIT-simple_nowcast", "LMU", "MeanEnsemble", "MedianEnsemble", "RIVM", "RKI", "SU", "SZ")
+  c("#B30000", "#E69F00", "#999999", "#56B4E9", "#F0E442", "#009E73", "#60D1B3", "#D55E00", "#3C4AAD", "#CC79A7", "#000000"),
+  c("Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT-simple_nowcast", "LMU", "MeanEnsemble", "MedianEnsemble", "RIVM", "RKI", "SU", "SZ")
 )
 
 
