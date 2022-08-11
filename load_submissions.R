@@ -86,7 +86,7 @@ d <- d %>%
 
 d <- d %>% 
   rowwise() %>% 
-  mutate(folder = if(retrospective) PATH_RETRO else HUB_PATH)
+  mutate(folder = if(retrospective) PATH_RETRO else PATH)
 
 # load all submissions into one dataframe in long format
 df <- data.frame()
@@ -103,7 +103,6 @@ for (i in 1:nrow(d)) {
   setTxtProgressBar(pb, i)
 }
 
-write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, ".csv.gz"))
+write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, "2.csv.gz"))
 
-# View(subset(df, model == "RKI-weekly_report" & forecast_date == "2021-11-24"))
 
