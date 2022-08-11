@@ -7,6 +7,8 @@ qs <- function(q, y, alpha) {
 
 score <- function(prediction, observation, type, quantile) {
   if (type == "mean") {
+    return((prediction - observation)^2)
+  } else if (type == "median") {
     return(abs(prediction - observation))
   } else if (type == "quantile") {
     return(qs(prediction, observation, quantile))
@@ -24,6 +26,12 @@ df_baseline <- read_csv(paste0("data/submissions_KIT-frozen_baseline.csv.gz")) %
   mutate(retrospective = FALSE)
 df <- bind_rows(df, df_baseline)
 
+# Add median separately
+df_median <- df %>% 
+  filter(quantile == 0.5) %>% 
+  mutate(type = "median")
+df <- bind_rows(df, df_median)
+
 df_truth <- load_truth(as_of = EVAL_DATE)
 
 df <- df %>%
@@ -33,16 +41,31 @@ df <- df %>%
   rowwise() %>%
   mutate(score = score(value, truth, type, quantile))
 
+df <- df %>% 
+  select(-c(pathogen, retrospective))
+
+
+scores_baseline <- df %>% 
+  filter(model == "KIT-frozen_baseline")
+
+write_csv(scores_baseline, paste0("data/scores_", START_DATE, "_", END_DATE, "_baseline.csv.gz"))
+
+df <- df %>% 
+  filter(model != "KIT-frozen_baseline")
+
 write_csv(df, paste0("data/scores_", START_DATE, "_", END_DATE, ".csv.gz"))
 
+
+
 # Aggregate scores
+df <- bind_rows(df, scores_baseline)
 df <- df %>%
   group_by(model, location, age_group, target, type) %>%
   summarize(score = mean(score))
 
 write_csv(df, paste0("data/scores_", START_DATE, "_", END_DATE, "_aggregated.csv.gz"))
 
-unique(df$model)
+
 
 ### FROZEN BASELINE
 

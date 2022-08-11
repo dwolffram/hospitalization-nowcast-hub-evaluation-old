@@ -2,9 +2,14 @@ library(tidyverse)
 library(patchwork)
 source("utils.R")
 
+metrics <- setNames(
+  c("absolute error", "squared error", "quantile score"),
+  c("median", "mean", "quantile")
+)
+
 plot_scores <- function(df, type = "quantile", level = "national", by_horizon = FALSE, relative = FALSE) {
   scores <- filter_scores(df, type, level, by_horizon)
-  metric <- if (type == "quantile") "quantile score" else "absolute error"
+  metric <- metrics[type]
   ylabel <- if (relative) paste("Relative", metric) else paste("Mean", metric)
 
   if (by_horizon) {
@@ -70,7 +75,7 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
 
 df <- load_scores(aggregate_scores = TRUE, shorten_names = TRUE)
 
-# Quantile scores
+# Quantile score
 
 p1 <- plot_scores(df, "quantile", "national", by_horizon = FALSE, relative = TRUE)
 p2 <- plot_scores(df, "quantile", "national", by_horizon = TRUE)
@@ -90,7 +95,7 @@ wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(
 ggsave("figures/scores_relative_qs.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
 
-# Absolute errors
+# Squared error
 
 p1 <- plot_scores(df, "mean", "national", by_horizon = FALSE, relative = TRUE)
 p2 <- plot_scores(df, "mean", "national", by_horizon = TRUE)
@@ -106,8 +111,26 @@ wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(
   wrap_elements(p3 + p4 + p4b + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
   wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1))
 
-ggsave("figures/scores_relative_ae.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
+ggsave("figures/scores_relative_mse.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
+
+# Absolute error
+
+p1 <- plot_scores(df, "median", "national", by_horizon = FALSE, relative = TRUE)
+p2 <- plot_scores(df, "median", "national", by_horizon = TRUE)
+p2b <- plot_scores(df, "median", "national", by_horizon = TRUE, relative = TRUE)
+p3 <- plot_scores(df, "median", "states", by_horizon = FALSE, relative = TRUE)
+p4 <- plot_scores(df, "median", "states", by_horizon = TRUE)
+p4b <- plot_scores(df, "median", "states", by_horizon = TRUE, relative = TRUE)
+p5 <- plot_scores(df, "median", "age", by_horizon = FALSE, relative = TRUE)
+p6 <- plot_scores(df, "median", "age", by_horizon = TRUE)
+p6b <- plot_scores(df, "median", "age", by_horizon = TRUE, relative = TRUE)
+
+wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
+  wrap_elements(p3 + p4 + p4b + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
+  wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1))
+
+ggsave("figures/scores_relative_ae.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
 
 #
