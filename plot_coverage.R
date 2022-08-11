@@ -108,7 +108,7 @@ plot_coverage_lines <- function(df, level = "national") {
     facet_wrap("quantile_label") +
     geom_line() +
     theme_bw() +
-    scale_color_manual(values = MODEL_COLORS) +
+    scale_color_manual(values = MODEL_COLORS, limits = force) +
     geom_hline(data = nominal_levels, aes(yintercept = quantile_level), linetype = "dashed") +
     labs(
       x = "Horizon (days)",
