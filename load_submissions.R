@@ -103,6 +103,6 @@ for (i in 1:nrow(d)) {
   setTxtProgressBar(pb, i)
 }
 
-write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, "2.csv.gz"))
+write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, ".csv.gz"))
 
 

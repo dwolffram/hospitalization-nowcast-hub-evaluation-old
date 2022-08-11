@@ -69,21 +69,21 @@ write_csv(df, paste0("data/scores_", START_DATE, "_", END_DATE, "_aggregated.csv
 
 ### FROZEN BASELINE
 
-df <- read_csv(paste0("data/submissions_KIT-frozen_baseline.csv.gz"))
-df_truth <- load_truth(as_of = EVAL_DATE)
-
-df <- df %>%
-  left_join(df_truth, by = c("location", "age_group", "target_end_date" = "date"))
-
-df <- df %>%
-  rowwise() %>%
-  mutate(score = score(value, truth, type, quantile))
-
-write_csv(df, paste0("data/scores_KIT-frozen_baseline.csv.gz"))
-
-# Aggregate scores
-df <- df %>%
-  group_by(model, location, age_group, target, type) %>%
-  summarize(score = mean(score))
-
-write_csv(df, paste0("data/scores_KIT-frozen_baseline_aggregated.csv.gz"))
+# df <- read_csv(paste0("data/submissions_KIT-frozen_baseline.csv.gz"))
+# df_truth <- load_truth(as_of = EVAL_DATE)
+# 
+# df <- df %>%
+#   left_join(df_truth, by = c("location", "age_group", "target_end_date" = "date"))
+# 
+# df <- df %>%
+#   rowwise() %>%
+#   mutate(score = score(value, truth, type, quantile))
+# 
+# write_csv(df, paste0("data/scores_KIT-frozen_baseline.csv.gz"))
+# 
+# # Aggregate scores
+# df <- df %>%
+#   group_by(model, location, age_group, target, type) %>%
+#   summarize(score = mean(score))
+# 
+# write_csv(df, paste0("data/scores_KIT-frozen_baseline_aggregated.csv.gz"))
