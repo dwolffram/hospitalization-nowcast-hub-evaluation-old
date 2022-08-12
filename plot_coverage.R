@@ -50,7 +50,7 @@ plot_coverage <- function(df, level = "national") {
     theme(legend.position = "right")
 }
 
-df <- load_scores(aggregate_scores = FALSE, shorten_names = TRUE)
+df <- load_scores(aggregate_scores = FALSE, shorten_names = TRUE, load_baseline = FALSE)
 
 p1 <- plot_coverage(df, "national")
 p2 <- plot_coverage(df, "states")
