@@ -50,9 +50,14 @@ df <- df %>%
   rowwise() %>%
   mutate(score = score(value, truth, type, quantile))
 
+# d <- df %>%
+#   group_by(model, location, age_group, target_end_date, forecast_date, target, type, retrospective) %>%
+#   summarize(score = mean(score))
+# 
+# write_csv(d, paste0("data/scores_retro.csv.gz"))
+
 df <- df %>%
   select(-c(pathogen, retrospective))
-
 
 scores_baseline <- df %>%
   filter(model == "KIT-frozen_baseline")
@@ -73,6 +78,7 @@ df <- df %>%
   summarize(score = mean(score))
 
 write_csv(df, paste0("data/scores_", START_DATE, "_", END_DATE, "_aggregated.csv.gz"))
+
 
 s <- df %>%
   filter(
