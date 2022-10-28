@@ -88,35 +88,3 @@ load_scores <- function(start_date = "2021-11-22", end_date = "2022-04-29",
 
   return(df)
 }
-
-# some 0 day ahead nowcasts are unrealisticly large (>1 bio)
-# we replace them with the respective -1 day ahead nowcasts
-fix_rki_errors <- function(df) {
-  df_error <- df %>%
-    filter(
-      model == "RKI",
-      value > 1000000 | is.na(value)
-    ) %>%
-    select(c(location, age_group, forecast_date, type, quantile))
-
-  df_replacement <- df %>%
-    filter(
-      model == "RKI",
-      target %in% c("0 day ahead inc hosp", "-1 day ahead inc hosp")
-    )
-
-  df_fixed <- df_error %>%
-    left_join(df_replacement) %>%
-    group_by(location, age_group, forecast_date, type, quantile, pathogen, model, retrospective) %>%
-    summarize(
-      target_end_date = max(target_end_date),
-      target = max(target),
-      value = min(value, na.rm = TRUE)
-    )
-
-  df <- df %>%
-    filter(!(model == "RKI" & (value > 1000000 | is.na(value))))
-  df <- bind_rows(df, df_fixed)
-
-  return(df)
-}

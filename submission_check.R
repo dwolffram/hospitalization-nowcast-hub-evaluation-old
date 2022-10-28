@@ -1,5 +1,6 @@
 library(tidyverse)
 source("utils.R")
+source("fix_submissions.R")
 
 # Load all submissions
 df <- read_csv("data/submissions_2021-11-22_2022-04-29.csv.gz")
@@ -13,6 +14,12 @@ df <- bind_rows(df, df_baseline)
 df$model <- factor(df$model,
                    levels = sort(unique(df$model)),
                    labels = SHORT_NAMES)
+
+# fix incomplete and erroneus nowcasts
+df <- fix_RKI(df)
+df <- fix_epiforecasts(df)
+df <- fix_ILM(df)
+df <- fix_LMU(df)
 
 # All targets that should be present
 template <- df_baseline %>% 
@@ -31,7 +38,7 @@ for (m in models_all) {
                               "target", "type", "quantile"))
   
   print(paste(m, ": ", nrow(df_temp), " rows missing."))
-  write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
+  # write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
   
 }
 
@@ -48,7 +55,7 @@ df_temp <- template %>%
                             "target", "type", "quantile"))
 
 print(paste(m, ": ", nrow(df_temp), " rows missing."))
-write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
+# write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
 
 # Does not cover age groups
 m <- "RKI"
@@ -62,4 +69,4 @@ df_temp <- template %>%
                             "target", "type", "quantile"))
 
 print(paste(m, ": ", nrow(df_temp), " rows missing."))
-write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
+# write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
