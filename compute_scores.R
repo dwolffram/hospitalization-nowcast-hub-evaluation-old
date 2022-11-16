@@ -1,5 +1,4 @@
 source("utils.R")
-source("load_truth.R")
 
 # Quantile score
 qs <- function(q, y, alpha) {

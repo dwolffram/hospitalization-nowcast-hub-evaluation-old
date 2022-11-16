@@ -1,4 +1,6 @@
 source("fix_submissions.R")
+source("load_truth.R")
+
 
 SHORT_NAMES <- c(
   "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT-simple_nowcast",
@@ -26,7 +28,7 @@ load_data <- function(add_baseline = TRUE, add_median = FALSE, shorten_names = T
   if (shorten_names) {
     df$model <- factor(df$model,
       levels = sort(unique(df$model)),
-      labels = SHORT_NAMES
+      labels = if (add_baseline) SHORT_NAMES else SHORT_NAMES[-3]
     )
   }
 
