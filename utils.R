@@ -1,3 +1,5 @@
+source("fix_submissions.R")
+
 SHORT_NAMES <- c(
   "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT-simple_nowcast",
   "LMU", "MeanEnsemble", "MedianEnsemble",
@@ -8,6 +10,52 @@ MODEL_COLORS <- setNames(
   c("#B30000", "#E69F00", "#999999", "#56B4E9", "#F0E442", "#009E73", "#60D1B3", "#D55E00", "#3C4AAD", "#CC79A7", "#000000"),
   c("Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT-simple_nowcast", "LMU", "MeanEnsemble", "MedianEnsemble", "RIVM", "RKI", "SU", "SZ")
 )
+
+
+load_data <- function(add_baseline = TRUE, add_median = FALSE, shorten_names = TRUE, fix_data = TRUE,
+                      add_truth = TRUE, eval_date = "2022-08-08") {
+  df <- read_csv("data/submissions.csv.gz", show_col_types = FALSE)
+
+  # Add baseline
+  if (add_baseline) {
+    df_baseline <- read_csv("data/submissions_KIT-frozen_baseline.csv.gz", show_col_types = FALSE) %>%
+      mutate(retrospective = FALSE)
+    df <- bind_rows(df, df_baseline)
+  }
+
+  if (shorten_names) {
+    df$model <- factor(df$model,
+      levels = sort(unique(df$model)),
+      labels = SHORT_NAMES
+    )
+  }
+
+  # fix incomplete and erroneus nowcasts
+  if (fix_data) {
+    df <- fix_RKI(df)
+    df <- fix_epiforecasts(df)
+    df <- fix_ILM(df)
+    df <- fix_LMU(df)
+  }
+
+  # Add median separately
+  if (add_median) {
+    df_median <- df %>%
+      filter(quantile == 0.5) %>%
+      mutate(type = "median")
+    df <- bind_rows(df, df_median)
+  }
+
+  # Add truth
+  if (add_truth) {
+    df_truth <- load_truth(as_of = eval_date)
+
+    df <- df %>%
+      left_join(df_truth, by = c("location", "age_group", "target_end_date" = "date"))
+  }
+
+  return(df)
+}
 
 
 filter_scores <- function(df, type = "quantile", level = "national", by_horizon = FALSE, average = TRUE) {
@@ -67,10 +115,10 @@ load_scores <- function(start_date = "2021-11-22", end_date = "2022-04-29",
                         aggregate_scores = FALSE, shorten_names = TRUE,
                         load_baseline = TRUE) {
   if (aggregate_scores) {
-    df <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_aggregated.csv.gz"))
+    df <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_aggregated.csv.gz"), show_col_types = FALSE)
   } else {
     df <- read_csv(paste0("data/scores_", start_date, "_", end_date, ".csv.gz"))
-    df_baseline <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_baseline.csv.gz"))
+    df_baseline <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_baseline.csv.gz"), show_col_types = FALSE)
     df <- bind_rows(df, df_baseline)
   }
 

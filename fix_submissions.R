@@ -86,7 +86,7 @@ fix_RKI <- function(df) {
 
 fix_ILM <- function(df) {
   # Identify missing dates
-  df_ILM <- read_csv("data/submission_check/ILM-missing.csv")
+  df_ILM <- read_csv("data/submission_check/ILM-missing.csv", show_col_types = FALSE)
   missing_dates <- as.character(unique(df_ILM$forecast_date))
   
   # Path to updated ILM model
@@ -117,7 +117,7 @@ fix_ILM <- function(df) {
 
 fix_LMU <- function(df) {
   # Identify missing dates
-  df_LMU <- read_csv("data/submission_check/LMU-missing.csv")
+  df_LMU <- read_csv("data/submission_check/LMU-missing.csv", show_col_types = FALSE)
   missing_dates <- as.character(unique(df_LMU$forecast_date))
   
   # Path to updated LMU model
