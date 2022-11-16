@@ -168,7 +168,7 @@ p6 <- plot_coverage_all(df2, "age")
  (p4 + p5 + p6) & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)
 
 
-ggsave("figures/performance_0-7d.pdf", width = 350, height = 200, unit = "mm", device = "pdf")
+ggsave("figures/scores_0-7d.pdf", width = 350, height = 200, unit = "mm", device = "pdf")
 
 
 
