@@ -111,28 +111,51 @@ filter_scores <- function(df, type = "quantile", level = "national", by_horizon 
 }
 
 
-load_scores <- function(start_date = "2021-11-22", end_date = "2022-04-29",
-                        aggregate_scores = FALSE, shorten_names = TRUE,
+load_scores <- function(aggregate_scores = FALSE, shorten_names = TRUE,
                         load_baseline = TRUE) {
   if (aggregate_scores) {
-    df <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_aggregated.csv.gz"), show_col_types = FALSE)
+    df <- read_csv(paste0("data/scores_aggregated.csv.gz"), show_col_types = FALSE)
   } else {
-    df <- read_csv(paste0("data/scores_", start_date, "_", end_date, ".csv.gz"))
-    df_baseline <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_baseline.csv.gz"), show_col_types = FALSE)
-    df <- bind_rows(df, df_baseline)
+    df <- read_csv(paste0("data/scores.csv.gz"))
   }
-
+  
   if (shorten_names) {
     df$model <- factor(df$model,
-      levels = sort(unique(df$model)),
-      labels = SHORT_NAMES
+                       levels = sort(unique(df$model)),
+                       labels = SHORT_NAMES
     )
   }
-
+  
   if (!load_baseline) {
     df <- df %>%
       filter(model != "KIT-frozen_baseline")
   }
-
+  
   return(df)
 }
+
+# load_scores <- function(start_date = "2021-11-22", end_date = "2022-04-29",
+#                         aggregate_scores = FALSE, shorten_names = TRUE,
+#                         load_baseline = TRUE) {
+#   if (aggregate_scores) {
+#     df <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_aggregated.csv.gz"), show_col_types = FALSE)
+#   } else {
+#     df <- read_csv(paste0("data/scores_", start_date, "_", end_date, ".csv.gz"))
+#     df_baseline <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_baseline.csv.gz"), show_col_types = FALSE)
+#     df <- bind_rows(df, df_baseline)
+#   }
+# 
+#   if (shorten_names) {
+#     df$model <- factor(df$model,
+#       levels = sort(unique(df$model)),
+#       labels = SHORT_NAMES
+#     )
+#   }
+# 
+#   if (!load_baseline) {
+#     df <- df %>%
+#       filter(model != "KIT-frozen_baseline")
+#   }
+# 
+#   return(df)
+# }

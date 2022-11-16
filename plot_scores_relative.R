@@ -133,6 +133,45 @@ wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(
 ggsave("figures/scores_relative_ae.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
 
+
+
+
+
+
+
+# 0 - 7 days horizon
+
+df <- load_scores(aggregate_scores = TRUE, shorten_names = TRUE)
+
+df <- df %>% 
+  filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
+
+
+p1 <- plot_scores(df, "quantile", "national", by_horizon = FALSE, relative = TRUE) + labs(title = "National level")
+p2 <- plot_scores(df, "quantile", "states", by_horizon = FALSE, relative = TRUE) + labs(title = "States")
+p3 <- plot_scores(df, "quantile", "age", by_horizon = FALSE, relative = TRUE) + labs(title = "Age groups")
+
+
+
+
+
+df <- load_scores(aggregate_scores = FALSE, shorten_names = TRUE, load_baseline = FALSE)
+
+df <- df %>% 
+  filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
+
+p4 <- plot_coverage_all(df, "national")
+p5 <- plot_coverage_all(df, "states")
+p6 <- plot_coverage_all(df, "age")
+
+(p1 + p2 + p3) /
+ (p4 + p5 + p6) & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)
+
+
+ggsave("figures/performance_0-7d.pdf", width = 350, height = 200, unit = "mm", device = "pdf")
+
+
+
 #
 # plot_scores(df, "quantile", "age", by_horizon = TRUE, relative = FALSE)
 # plot_scores(df, "quantile", "states", TRUE, TRUE)
