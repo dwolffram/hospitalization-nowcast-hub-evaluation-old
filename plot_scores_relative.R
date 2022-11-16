@@ -155,14 +155,14 @@ p3 <- plot_scores(df, "quantile", "age", by_horizon = FALSE, relative = TRUE) + 
 
 
 
-df <- load_scores(aggregate_scores = FALSE, shorten_names = TRUE, load_baseline = FALSE)
-
-df <- df %>% 
+df2 <- load_data(add_baseline = FALSE, add_median = FALSE, shorten_names = TRUE, 
+                fix_data = TRUE, add_truth = TRUE, eval_date = "2022-08-08")
+df2 <- df2 %>% 
   filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
 
-p4 <- plot_coverage_all(df, "national")
-p5 <- plot_coverage_all(df, "states")
-p6 <- plot_coverage_all(df, "age")
+p4 <- plot_coverage_all(df2, "national")
+p5 <- plot_coverage_all(df2, "states")
+p6 <- plot_coverage_all(df2, "age")
 
 (p1 + p2 + p3) /
  (p4 + p5 + p6) & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)
