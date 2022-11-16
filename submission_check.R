@@ -4,6 +4,7 @@ source("fix_submissions.R")
 
 # Load all submissions
 df <- read_csv("data/submissions_2021-11-22_2022-04-29.csv.gz")
+df <- read_csv("data/submissions.csv.gz")
 
 # Add baseline
 df_baseline <- read_csv(paste0("data/submissions_KIT-frozen_baseline.csv.gz")) %>% 
@@ -38,7 +39,7 @@ for (m in models_all) {
                               "target", "type", "quantile"))
   
   print(paste(m, ": ", nrow(df_temp), " rows missing."))
-  # write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
+  write_csv(df_temp, paste0("data/submission_check/fixed/", m, "-missing.csv"))
   
 }
 
@@ -55,7 +56,7 @@ df_temp <- template %>%
                             "target", "type", "quantile"))
 
 print(paste(m, ": ", nrow(df_temp), " rows missing."))
-# write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
+write_csv(df_temp, paste0("data/submission_check/fixed/", m, "-missing.csv"))
 
 # Does not cover age groups
 m <- "RKI"
@@ -69,4 +70,4 @@ df_temp <- template %>%
                             "target", "type", "quantile"))
 
 print(paste(m, ": ", nrow(df_temp), " rows missing."))
-# write_csv(df_temp, paste0("data/submission_check/", m, "-missing.csv"))
+write_csv(df_temp, paste0("data/submission_check/fixed/", m, "-missing.csv"))

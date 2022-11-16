@@ -30,7 +30,8 @@ for (i in 1:nrow(df_files)) {
   setTxtProgressBar(pb, i)
 }
 
-write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, "_prospective.csv.gz"))
+# write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, "_prospective.csv.gz"))
+write_csv(df, paste0("data/submissions_prospective.csv.gz"))
 
 
 ### LOAD RETROSPECTIVE SUBMISSIONS
@@ -63,7 +64,8 @@ for (i in 1:nrow(df_files2)) {
   setTxtProgressBar(pb, i)
 }
 
-write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, "_retrospective.csv.gz"))
+# write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, "_retrospective.csv.gz"))
+write_csv(df, paste0("data/submissions_retrospective.csv.gz"))
 
 
 ### COMBINE PROSPECTIVE AND RETROSPECTIVE SUBMISSIONS
@@ -103,6 +105,7 @@ for (i in 1:nrow(d)) {
   setTxtProgressBar(pb, i)
 }
 
-write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, ".csv.gz"))
+# write_csv(df, paste0("data/submissions_", START_DATE, "_", END_DATE, ".csv.gz"))
+write_csv(df, paste0("data/submissions.csv.gz"))
 
 
