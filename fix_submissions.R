@@ -102,6 +102,7 @@ fix_ILM <- function(df) {
                         show_col_types = FALSE, progress = FALSE
     )
     df_temp$model <- "ILM"
+    df_temp$retrospective <- TRUE
     df_new <- bind_rows(df_new, df_temp)
   }
   
@@ -133,6 +134,7 @@ fix_LMU <- function(df) {
                         show_col_types = FALSE, progress = FALSE
     )
     df_temp$model <- "LMU"
+    df_temp$retrospective <- TRUE
     df_new <- bind_rows(df_new, df_temp)
   }
   

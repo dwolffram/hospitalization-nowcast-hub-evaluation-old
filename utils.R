@@ -15,7 +15,7 @@ MODEL_COLORS <- setNames(
 
 
 load_data <- function(add_baseline = TRUE, add_median = FALSE, shorten_names = TRUE, fix_data = TRUE,
-                      add_truth = TRUE, eval_date = "2022-08-08") {
+                      add_truth = TRUE, exclude_missing = TRUE, eval_date = "2022-08-08") {
   df <- read_csv("data/submissions.csv.gz", show_col_types = FALSE)
 
   # Add baseline
@@ -32,12 +32,27 @@ load_data <- function(add_baseline = TRUE, add_median = FALSE, shorten_names = T
     )
   }
 
-  # fix incomplete and erroneus nowcasts
+  # Fix incomplete and erroneus nowcasts
   if (fix_data) {
     df <- fix_RKI(df)
     df <- fix_epiforecasts(df)
     df <- fix_ILM(df)
     df <- fix_LMU(df)
+  }
+  
+  # Exclude missing entries from all submissions 
+  if (exclude_missing) {
+    files <- c("Epiforecasts-missing.csv", "MeanEnsemble-missing.csv", "MedianEnsemble-missing.csv", 
+               "SZ-missing.csv")
+    
+    df_missing <- data.frame()
+    for (f in files) {
+      df_temp <- read_csv(paste0("data/submission_check/fixed/", f),
+                          show_col_types = FALSE, progress = FALSE)
+      df_missing <- bind_rows(df_missing, df_temp)
+    }
+    
+    df <- anti_join(df, df_missing)
   }
 
   # Add median separately
