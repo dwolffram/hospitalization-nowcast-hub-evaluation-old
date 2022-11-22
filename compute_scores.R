@@ -1,3 +1,4 @@
+library(tidyverse)
 source("utils.R")
 
 # Quantile score
@@ -16,8 +17,8 @@ score <- function(prediction, observation, type, quantile) {
 }
 
 
-df <- load_data(add_baseline = TRUE, add_median = TRUE, shorten_names = TRUE, 
-                fix_data = TRUE, add_truth = TRUE, eval_date = "2022-08-08")
+df <- load_data(add_baseline = TRUE, add_median = TRUE, shorten_names = TRUE, fix_data = TRUE,
+                add_truth = TRUE, exclude_missing = TRUE, eval_date = "2022-08-08")
 
 df <- df %>%
   rowwise() %>%
