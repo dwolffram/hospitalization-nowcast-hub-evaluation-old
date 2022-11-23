@@ -3,8 +3,9 @@ library(patchwork)
 source("utils.R")
 
 plot_coverage <- function(df, level = "national") {
-  df <- filter_scores(df, "quantile", level, by_horizon = TRUE, average = FALSE)
-
+  df <- filter_data(df, type = "quantile", level = "national") %>%
+    mutate(horizon = as.numeric(str_extract(target, "-?\\d+")))
+  
   df_wide <- df %>%
     pivot_wider(names_from = quantile, values_from = value, names_prefix = "quantile_")
 
@@ -52,7 +53,7 @@ plot_coverage <- function(df, level = "national") {
 # df <- load_scores(aggregate_scores = FALSE, shorten_names = TRUE, load_baseline = FALSE)
 
 df <- load_data(add_baseline = FALSE, add_median = FALSE, shorten_names = TRUE, 
-                fix_data = TRUE, add_truth = TRUE, eval_date = "2022-08-08")
+                fix_data = TRUE, add_truth = TRUE, exclude_missing = TRUE, eval_date = "2022-08-08")
 
 p1 <- plot_coverage(df, "national")
 p2 <- plot_coverage(df, "states")
@@ -74,7 +75,8 @@ plot_coverage_lines <- function(df, level = "national") {
     c("national", "states", "age")
   )
 
-  df <- filter_scores(df, "quantile", level, by_horizon = TRUE, average = FALSE) 
+  df <- filter_data(df, type = "quantile", level = "national") %>%
+    mutate(horizon = as.numeric(str_extract(target, "-?\\d+")))
 
   df_wide <- df %>%
     pivot_wider(names_from = quantile, values_from = value, names_prefix = "quantile_")
@@ -134,7 +136,8 @@ ggsave("figures/coverage_lines.pdf", width = 300, height = 350, unit = "mm", dev
 ### Coverage across all horizons
 
 plot_coverage_all <- function(df, level = "national") {
-  df <- filter_scores(df, "quantile", level, by_horizon = TRUE, average = FALSE) 
+  df <- filter_data(df, type = "quantile", level = "national") %>%
+    mutate(horizon = as.numeric(str_extract(target, "-?\\d+"))) 
   
   df_wide <- df %>%
     pivot_wider(names_from = quantile, values_from = value, names_prefix = "quantile_")

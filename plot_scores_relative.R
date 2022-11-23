@@ -47,10 +47,14 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
 
     scores <- scores %>%
       filter(model != "KIT-frozen_baseline")
+    
+    max_score <- max(scores$score)
+    ylim <- (1 + 0.1*nchar(trunc(abs(max_score)))) * max_score # depending on the number of digits
+    print(ylim)
 
     ggplot(scores, aes(x = model, y = score, fill = model)) +
       geom_bar(stat = "identity") +
-      geom_text(aes(label = round(score, digits = 2)), hjust = -0.25, size = 9 * 5 / 14) +
+      geom_text(aes(label = sprintf("%0.2f", round(score, digits = 2))), hjust = -0.25, size = 9 * 5 / 14) +
       scale_fill_manual(values = MODEL_COLORS) +
       labs(
         y = ylabel,
@@ -58,7 +62,7 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
         color = "Model"
       ) +
       coord_flip() +
-      expand_limits(y = 1.2 * max(scores$score)) +
+      expand_limits(y = ylim) +
       scale_x_discrete(limits = rev(unique(scores$model))) +
       theme_bw() +
       theme(legend.position = "none") +
@@ -146,17 +150,13 @@ df <- load_scores(aggregate_scores = TRUE, shorten_names = TRUE)
 df <- df %>% 
   filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
 
-
 p1 <- plot_scores(df, "quantile", "national", by_horizon = FALSE, relative = TRUE) + labs(title = "National level")
 p2 <- plot_scores(df, "quantile", "states", by_horizon = FALSE, relative = TRUE) + labs(title = "States")
 p3 <- plot_scores(df, "quantile", "age", by_horizon = FALSE, relative = TRUE) + labs(title = "Age groups")
 
 
-
-
-
 df2 <- load_data(add_baseline = FALSE, add_median = FALSE, shorten_names = TRUE, 
-                fix_data = TRUE, add_truth = TRUE, eval_date = "2022-08-08")
+                fix_data = TRUE, add_truth = TRUE, exclude_missing = TRUE, eval_date = "2022-08-08")
 df2 <- df2 %>% 
   filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
 

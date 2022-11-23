@@ -78,6 +78,11 @@ load_data <- function(add_baseline = TRUE, add_median = FALSE, shorten_names = T
 filter_scores <- function(df, type = "quantile", level = "national", by_horizon = FALSE, average = TRUE) {
   df <- df %>%
     filter(type == !!type)
+  
+  if (!!type == "quantile") {
+    df <- df %>% 
+      filter(model != "RKI")
+  }
 
   if (level == "national") {
     df <- df %>%
@@ -148,6 +153,38 @@ load_scores <- function(aggregate_scores = FALSE, shorten_names = TRUE,
       filter(model != "KIT-frozen_baseline")
   }
   
+  return(df)
+}
+
+filter_data <- function(df, model, type = "quantile", level = "national") {
+  df <- df %>%
+    filter(type == !!type)
+  
+  if (!missing(model)) {
+    df <- df %>%
+      filter(model == !!model)
+  }
+  
+  if (level == "national") {
+    df <- df %>%
+      filter(
+        location == "DE",
+        age_group == "00+"
+      )
+  } else if (level == "states") {
+    df <- df %>%
+      filter(
+        location != "DE",
+        model != "ILM"
+      )
+  } else if (level == "age") {
+    df <- df %>%
+      filter(
+        location == "DE",
+        age_group != "00+",
+        model != "RKI"
+      )
+  }
   return(df)
 }
 
