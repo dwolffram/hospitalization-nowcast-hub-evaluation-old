@@ -73,9 +73,16 @@ ggplot(df_rank, aes(x = rank, y = reorder(model, meanRank), fill = factor(stat(q
   xlim(c(0, 1)) +
   theme_bw()
 
-# ggsave("figures/ranks_age.pdf", width = 250, height = 200, unit = "mm", device = "pdf")
+ggsave("figures/ranks_age.pdf", width = 250, height = 200, unit = "mm", device = "pdf")
 
 
 df_rank %>%
   group_by(model) %>%
   summarize(q = mean(rank >= 1 / 2))
+
+#######
+
+# temp <- temp %>%
+#   mutate(horizon = as.numeric(str_extract(target, "-?\\d+"))) %>% 
+#   filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
+  
