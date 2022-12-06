@@ -3,7 +3,7 @@ library(patchwork)
 source("utils.R")
 
 plot_coverage <- function(df, level = "national") {
-  df <- filter_data(df, type = "quantile", level = "national") %>%
+  df <- filter_data(df, type = "quantile", level = level) %>%
     mutate(horizon = as.numeric(str_extract(target, "-?\\d+")))
   
   df_wide <- df %>%
@@ -75,7 +75,7 @@ plot_coverage_lines <- function(df, level = "national") {
     c("national", "states", "age")
   )
 
-  df <- filter_data(df, type = "quantile", level = "national") %>%
+  df <- filter_data(df, type = "quantile", level = level) %>%
     mutate(horizon = as.numeric(str_extract(target, "-?\\d+")))
 
   df_wide <- df %>%
@@ -136,7 +136,7 @@ ggsave("figures/coverage_lines.pdf", width = 300, height = 350, unit = "mm", dev
 ### Coverage across all horizons
 
 plot_coverage_all <- function(df, level = "national") {
-  df <- filter_data(df, type = "quantile", level = "national") %>%
+  df <- filter_data(df, type = "quantile", level = level) %>%
     mutate(horizon = as.numeric(str_extract(target, "-?\\d+"))) 
   
   df_wide <- df %>%
