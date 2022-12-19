@@ -3,7 +3,7 @@ source("utils.R")
 
 # Quantile score
 qs <- function(q, y, alpha) {
-  (as.numeric(y < q) - alpha) * (q - y)
+  2 * (as.numeric(y < q) - alpha) * (q - y)
 }
 
 score <- function(prediction, observation, type, quantile) {
@@ -27,14 +27,14 @@ df <- df %>%
 df <- df %>%
   select(-c(pathogen, value, truth))
 
-# write_csv(df, paste0("data/scores.csv.gz"))
+write_csv(df, paste0("data/scores.csv.gz"))
 
 # Aggregate scores
 df <- df %>%
   group_by(model, location, age_group, target, type) %>%
   summarize(score = mean(score))
 
-# write_csv(df, paste0("data/scores_aggregated.csv.gz"))
+write_csv(df, paste0("data/scores_aggregated.csv.gz"))
 
 
 # s <- df %>%
