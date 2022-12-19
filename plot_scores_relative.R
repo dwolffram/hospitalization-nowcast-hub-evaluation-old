@@ -3,7 +3,7 @@ library(patchwork)
 source("utils.R")
 
 metrics <- setNames(
-  c("absolute error", "squared error", "quantile score"),
+  c("absolute error", "squared error", "WIS"),
   c("median", "mean", "quantile")
 )
 
@@ -28,7 +28,7 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
       filter(model != "KIT-frozen_baseline")
 
     ggplot(scores, aes(x = horizon, y = score, color = model)) +
-      geom_point() +
+      # geom_point() +
       geom_line(size = 1) +
       scale_color_manual(values = MODEL_COLORS) +
       labs(
@@ -36,6 +36,9 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
         y = ylabel,
         color = "Model"
       ) +
+      scale_x_continuous(breaks = 0:5*-5,
+                         minor_breaks = -28:0) +
+      expand_limits(y = 0) +
       theme_bw() +
       theme(legend.position = "none")
   } else {
