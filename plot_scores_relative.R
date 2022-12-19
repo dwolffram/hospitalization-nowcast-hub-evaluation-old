@@ -90,13 +90,14 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
   }
 }
 
-df <- load_scores(aggregate_scores = TRUE, shorten_names = TRUE)
+df <- load_scores(aggregate_scores = TRUE)
 
 df <- df %>% 
   mutate(model = fct_relevel(model, rev(c(
     "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT",
     "LMU", "RIVM", "RKI", "SU", "SZ", "MeanEnsemble", "MedianEnsemble"
   ))))
+
 
 # Quantile score
 

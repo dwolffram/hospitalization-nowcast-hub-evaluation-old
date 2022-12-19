@@ -134,7 +134,7 @@ filter_scores <- function(df, type = "quantile", level = "national", by_horizon 
 }
 
 
-load_scores <- function(aggregate_scores = FALSE, shorten_names = TRUE,
+load_scores <- function(aggregate_scores = FALSE, # shorten_names = TRUE,
                         load_baseline = TRUE) {
   if (aggregate_scores) {
     df <- read_csv(paste0("data/scores_aggregated.csv.gz"), show_col_types = FALSE)
@@ -142,12 +142,12 @@ load_scores <- function(aggregate_scores = FALSE, shorten_names = TRUE,
     df <- read_csv(paste0("data/scores.csv.gz"))
   }
   
-  if (shorten_names) {
-    df$model <- factor(df$model,
-                       levels = sort(unique(df$model)),
-                       labels = SHORT_NAMES
-    )
-  }
+  # if (shorten_names) {
+  #   df$model <- factor(df$model,
+  #                      levels = sort(unique(df$model)),
+  #                      labels = SHORT_NAMES
+  #   )
+  # }
   
   if (!load_baseline) {
     df <- df %>%

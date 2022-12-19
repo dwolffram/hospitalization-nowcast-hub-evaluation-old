@@ -40,7 +40,7 @@ write_csv(df, paste0("data/scores_aggregated.csv.gz"))
 # s <- df %>%
 #   filter(
 #     location == "DE",
-#     age_group != "00+"
+#     age_group == "00+"
 #   ) %>%
 #   group_by(model, type) %>%
 #   summarize(score = mean(score))
