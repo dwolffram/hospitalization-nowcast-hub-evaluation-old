@@ -66,22 +66,32 @@ frozen_sum <- function(df, indices_frozen) {
   }
 }
 
-load_frozen_truth <- function(lead_time = 0, start_date = "2021-11-01") {
-  indices_frozen <- make_frozen_indices(lead_time)
+load_frozen_truth <- function(lead_time = 0, start_date = "2021-11-01", load_precomputed = TRUE) {
+  # check if file already exists
+  filename <- paste0("data/truth_frozen/truth_frozen_", lead_time, "d.csv")
+  if (load_precomputed & start_date == "2021-11-01" & file.exists(filename)){
+    print(paste0("Frozen truth has already been computed. Loading: ", filename, ".",
+                 "If you want to recompute it, set `load_precomputed = FALSE`."))
+    df <- read_csv(filename, show_col_types = FALSE)
+  } else {
+    
+    indices_frozen <- make_frozen_indices(lead_time)
 
-  df <- read_csv("../hospitalization-nowcast-hub/data-truth/COVID-19/COVID-19_hospitalizations.csv",
-    show_col_types = FALSE
-  ) %>%
-    filter(date >= start_date)
-
-  df <- df %>%
-    group_by(location, age_group) %>%
-    run_by(idx = "date", k = "7 days") %>%
-    mutate(frozen_value = runner(x = ., f = function(x) {
-      frozen_sum(x, indices_frozen)
-    })) %>%
-    select(c(date, location, age_group, frozen_value)) %>%
-    drop_na()
+    df <- read_csv("../hospitalization-nowcast-hub/data-truth/COVID-19/COVID-19_hospitalizations.csv",
+      show_col_types = FALSE
+    ) %>%
+      filter(date >= start_date)
+  
+    df <- df %>%
+      group_by(location, age_group) %>%
+      run_by(idx = "date", k = "7 days") %>%
+      mutate(frozen_value = runner(x = ., f = function(x) {
+        frozen_sum(x, indices_frozen)
+      })) %>%
+      select(c(date, location, age_group, frozen_value)) %>%
+      drop_na()
+  }
+  
 }
 
 # truth_frozen <- load_frozen_truth(0, "2021-11-01")

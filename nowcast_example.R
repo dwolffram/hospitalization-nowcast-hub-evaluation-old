@@ -1,7 +1,8 @@
 source("old/load_data.R")
 source("load_truth.R")
 
-dates <- c("2021-12-01", "2022-02-01", "2022-04-01", "2022-06-01")
+# dates <- c("2021-12-01", "2022-02-01", "2022-04-01", "2022-06-01")
+dates <- c("2021-12-01", "2022-02-01", "2022-04-01", "2022-08-08")
 
 cbPalette <- rev(c("#000000", "#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"))
 
@@ -165,7 +166,7 @@ df_frozen <- df_frozen %>%
 dfs <- bind_rows(dfs, df_frozen)
 
 dfs %>%
-  filter(date >= "2021-07-01", as_of %in% c(dates, "2022-05-01", "unrevised, \ninitial reports")) %>%
+  filter(date >= "2021-07-01", date <= "2022-06-01", as_of %in% c(dates, "2022-05-01", "unrevised, \ninitial reports")) %>%
   ggplot() +
   geom_vline(xintercept = as.Date(dates[-4]), size = 1.5, linetype = "dashed", color = "black") +
   # geom_label(aes(x = as.Date(dates[1]), y = 12500, label = dates[1])) +

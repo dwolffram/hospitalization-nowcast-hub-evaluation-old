@@ -1,16 +1,17 @@
 source("fix_submissions.R")
 source("load_truth.R")
 
+Sys.setlocale("LC_ALL", "C")
 
 SHORT_NAMES <- c(
-  "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT-simple_nowcast",
+  "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT",
   "LMU", "MeanEnsemble", "MedianEnsemble",
   "RIVM", "RKI", "SU", "SZ"
 )
 
 MODEL_COLORS <- setNames(
   c("#B30000", "#E69F00", "#999999", "#56B4E9", "#F0E442", "#009E73", "#60D1B3", "#D55E00", "#3C4AAD", "#CC79A7", "#000000"),
-  c("Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT-simple_nowcast", "LMU", "MeanEnsemble", "MedianEnsemble", "RIVM", "RKI", "SU", "SZ")
+  c("Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT", "LMU", "MeanEnsemble", "MedianEnsemble", "RIVM", "RKI", "SU", "SZ")
 )
 
 
