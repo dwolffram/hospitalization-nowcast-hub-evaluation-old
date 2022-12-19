@@ -7,7 +7,7 @@ metrics <- setNames(
   c("median", "mean", "quantile")
 )
 
-plot_scores <- function(df, type = "quantile", level = "national", by_horizon = FALSE, relative = FALSE) {
+plot_scores <- function(df, type = "quantile", level = "national", by_horizon = FALSE, relative = FALSE, add_ae = FALSE) {
   scores <- filter_scores(df, type, level, by_horizon)
   metric <- metrics[type]
   ylabel <- if (relative) paste("Relative", metric) else paste("Mean", metric)
@@ -46,24 +46,34 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
     }
 
     scores <- scores %>%
-      filter(model != "KIT-frozen_baseline")
+      filter(model != "KIT-frozen_baseline") 
     
-    max_score <- max(scores$score)
-    ylim <- (1 + 0.1*nchar(trunc(abs(max_score)))) * max_score # depending on the number of digits
-    print(ylim)
+    if (add_ae) {
+      scores_ae <- filter_scores(df, "median", level, by_horizon) %>%
+      filter(model != "KIT-frozen_baseline")
+    }
+    
+    # max_score <- max(scores_ae$score)
+    # ylim <- (1 + 0.1*nchar(trunc(abs(max_score)))) * max_score # depending on the number of digits
 
-    ggplot(scores, aes(x = model, y = score, fill = model)) +
-      geom_bar(stat = "identity") +
-      geom_text(aes(label = sprintf("%0.2f", round(score, digits = 2))), hjust = -0.25, size = 9 * 5 / 14) +
+    ggplot() +
+      {if (add_ae) geom_point(data = scores_ae, aes(x = model, y = score), shape = 4)} +
+      geom_bar(data = scores, aes(x = model, y = score, fill = model), stat = "identity") +
+      # geom_text(aes(label = sprintf("%0.2f", round(score, digits = 2))), hjust = -0.25, size = 9 * 5 / 14) +
+      geom_label(data = scores, aes(x = model, y = 0.9*score, label = sprintf("%0.2f", round(score, digits = 2))), 
+                 fill = "white", alpha = 0.7, hjust = 1,
+                 label.size = NA, label.r = unit(0, "pt"), size = 9 * 5 / 14) +
       scale_fill_manual(values = MODEL_COLORS) +
       labs(
         y = ylabel,
         x = NULL,
         color = "Model"
-      ) +
+      ) + 
+      
       coord_flip() +
-      expand_limits(y = ylim) +
-      scale_x_discrete(limits = rev(unique(scores$model))) +
+      # expand_limits(y = ylim) +
+      # scale_x_discrete(limits = c("MedianEnsemble", "MeanEnsemble", "SZ", "SU", "RKI", "RIVM", 
+      #                             "LMU", "KIT", "ILM", "Epiforecasts")) +
       theme_bw() +
       theme(legend.position = "none") +
       {
@@ -79,15 +89,21 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
 
 df <- load_scores(aggregate_scores = TRUE, shorten_names = TRUE)
 
+df <- df %>% 
+  mutate(model = fct_relevel(model, rev(c(
+    "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT",
+    "LMU", "RIVM", "RKI", "SU", "SZ", "MeanEnsemble", "MedianEnsemble"
+  ))))
+
 # Quantile score
 
-p1 <- plot_scores(df, "quantile", "national", by_horizon = FALSE, relative = TRUE)
+p1 <- plot_scores(df, "quantile", "national", by_horizon = FALSE, relative = TRUE, add_ae = TRUE)
 p2 <- plot_scores(df, "quantile", "national", by_horizon = TRUE)
 p2b <- plot_scores(df, "quantile", "national", by_horizon = TRUE, relative = TRUE)
-p3 <- plot_scores(df, "quantile", "states", by_horizon = FALSE, relative = TRUE)
+p3 <- plot_scores(df, "quantile", "states", by_horizon = FALSE, relative = TRUE, add_ae = TRUE)
 p4 <- plot_scores(df, "quantile", "states", by_horizon = TRUE)
 p4b <- plot_scores(df, "quantile", "states", by_horizon = TRUE, relative = TRUE)
-p5 <- plot_scores(df, "quantile", "age", by_horizon = FALSE, relative = TRUE)
+p5 <- plot_scores(df, "quantile", "age", by_horizon = FALSE, relative = TRUE, add_ae = TRUE)
 p6 <- plot_scores(df, "quantile", "age", by_horizon = TRUE)
 p6b <- plot_scores(df, "quantile", "age", by_horizon = TRUE, relative = TRUE)
 
