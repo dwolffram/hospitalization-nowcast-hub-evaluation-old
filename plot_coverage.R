@@ -55,6 +55,12 @@ plot_coverage <- function(df, level = "national") {
 df <- load_data(add_baseline = FALSE, add_median = FALSE, shorten_names = TRUE, 
                 fix_data = TRUE, add_truth = TRUE, exclude_missing = TRUE, eval_date = "2022-08-08")
 
+df <- df %>% 
+  mutate(model = fct_relevel(model, c(
+    "Epiforecasts", "ILM", "KIT",
+    "LMU", "RIVM", "RKI", "SU", "SZ", "MeanEnsemble", "MedianEnsemble"
+  )))
+
 p1 <- plot_coverage(df, "national")
 p2 <- plot_coverage(df, "states")
 p3 <- plot_coverage(df, "age")
@@ -113,6 +119,8 @@ plot_coverage_lines <- function(df, level = "national") {
     theme_bw() +
     scale_color_manual(values = MODEL_COLORS, limits = force) +
     geom_hline(data = nominal_levels, aes(yintercept = quantile_level), linetype = "dashed") +
+    scale_x_continuous(breaks = 0:5*-5,
+                       minor_breaks = -28:0) +
     labs(
       x = "Horizon (days)",
       y = "Empirical coverage",
