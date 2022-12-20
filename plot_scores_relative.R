@@ -165,24 +165,37 @@ ggsave("figures/scores_relative_ae.pdf", width = 300, height = 350, unit = "mm",
 
 # 0 - 7 days horizon
 
-df <- load_scores(aggregate_scores = TRUE, shorten_names = TRUE)
+df <- load_scores(aggregate_scores = TRUE)
+
+df <- df %>% 
+  mutate(model = fct_relevel(model, rev(c(
+    "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT",
+    "LMU", "RIVM", "RKI", "SU", "SZ", "MeanEnsemble", "MedianEnsemble"
+  ))))
 
 df <- df %>% 
   filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
 
-p1 <- plot_scores(df, "quantile", "national", by_horizon = FALSE, relative = TRUE) + labs(title = "National level")
-p2 <- plot_scores(df, "quantile", "states", by_horizon = FALSE, relative = TRUE) + labs(title = "States")
-p3 <- plot_scores(df, "quantile", "age", by_horizon = FALSE, relative = TRUE) + labs(title = "Age groups")
+p1 <- plot_scores(df, "quantile", "national", by_horizon = FALSE, relative = TRUE, add_ae = TRUE) + labs(title = "National level")
+p2 <- plot_scores(df, "quantile", "states", by_horizon = FALSE, relative = TRUE, add_ae = TRUE) + labs(title = "States")
+p3 <- plot_scores(df, "quantile", "age", by_horizon = FALSE, relative = TRUE, add_ae = TRUE) + labs(title = "Age groups") + expand_limits(y = 128)
 
 
 df2 <- load_data(add_baseline = FALSE, add_median = FALSE, shorten_names = TRUE, 
                 fix_data = TRUE, add_truth = TRUE, exclude_missing = TRUE, eval_date = "2022-08-08")
+
+df2 <- df2 %>% 
+  mutate(model = fct_relevel(model, c(
+    "Epiforecasts", "ILM", "KIT",
+    "LMU", "RIVM", "RKI", "SU", "SZ", "MeanEnsemble", "MedianEnsemble"
+  )))
+
 df2 <- df2 %>% 
   filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
 
-p4 <- plot_coverage_all(df2, "national")
-p5 <- plot_coverage_all(df2, "states")
-p6 <- plot_coverage_all(df2, "age")
+p4 <- plot_coverage_all(df2, "national") + theme(legend.position = "none")
+p5 <- plot_coverage_all(df2, "states") + theme(legend.position = "none")
+p6 <- plot_coverage_all(df2, "age")  + theme(legend.position = "right") 
 
 (p1 + p2 + p3) /
  (p4 + p5 + p6) & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)
