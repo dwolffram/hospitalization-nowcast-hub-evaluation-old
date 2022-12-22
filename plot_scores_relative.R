@@ -60,13 +60,14 @@ plot_scores <- function(df, type = "quantile", level = "national", by_horizon = 
     # ylim <- (1 + 0.1*nchar(trunc(abs(max_score)))) * max_score # depending on the number of digits
 
     ggplot() +
-      {if (add_ae) geom_point(data = scores_ae, aes(x = model, y = score), shape = 4)} +
+      {if (add_ae) geom_point(data = scores_ae, aes(x = model, y = score, fill = model), shape = 21)} +
       geom_bar(data = scores, aes(x = model, y = score, fill = model), stat = "identity") +
       # geom_text(aes(label = sprintf("%0.2f", round(score, digits = 2))), hjust = -0.25, size = 9 * 5 / 14) +
       geom_label(data = scores, aes(x = model, y = 0.9*score, label = sprintf("%0.2f", round(score, digits = 2))), 
                  fill = "white", alpha = 0.7, hjust = 1,
                  label.size = NA, label.r = unit(0, "pt"), size = 9 * 5 / 14) +
       scale_fill_manual(values = MODEL_COLORS) +
+      scale_color_manual(values = MODEL_COLORS) +
       labs(
         y = ylabel,
         x = NULL,
@@ -116,7 +117,7 @@ wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(
   wrap_elements(p3 + p4 + p4b + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
   wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1))
 
-ggsave("figures/scores_relative_qs.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
+ggsave("figures/scores_relative_qs3.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
 
 # Squared error
