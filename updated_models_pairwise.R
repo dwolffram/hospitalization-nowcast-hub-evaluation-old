@@ -134,18 +134,18 @@ plot_coverage_lines <- function(df, level) {
 
 
 COLORS_UPDATED <- setNames(
-  c("#56B4E9", "#3c7da3", "#F0E442", "#a89f2e"),
-  c("KIT", "KIT (updated)", "LMU", "LMU (updated)")
+  c("#56B4E9", "#3c7da3", "#F0E442", "#a89f2e", "#E69F00", "#a16f00"),
+  c("KIT", "KIT (updated)", "LMU", "LMU (updated)", "ILM", "ILM (updated)")
 )
 
 
 df <- read_csv("data/scores_updated_aggregated.csv.gz") %>% 
-  mutate(model = str_sub(model, 1, 3)) %>% 
-  filter(model != "ILM")
+  mutate(model = str_sub(model, 1, 3)) #%>% 
+  #filter(model != "ILM")
 
 df2 <- read_csv("data/scores_updated.csv.gz") %>% 
-  mutate(model = str_sub(model, 1, 3)) %>% 
-  filter(model != "ILM")
+  mutate(model = str_sub(model, 1, 3)) #%>% 
+  #filter(model != "ILM")
 
 plot_scores_updated(df, "quantile", "national")
 
