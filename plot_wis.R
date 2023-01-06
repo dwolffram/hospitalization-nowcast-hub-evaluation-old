@@ -53,8 +53,8 @@ p1 <- ggplot() +
   theme(legend.position = "bottom")
 
 
-plot_wis <- function(level = "national", add_ae = TRUE){
-  df <- read_csv(paste0("data/wis_", level, ".csv.gz"))
+plot_wis <- function(level = "national", add_ae = TRUE, short_horizons = FALSE){
+  df <- read_csv(paste0("data/wis_", level, ifelse(short_horizons, "_7d", ""), ".csv.gz"))
   
   df <- df %>% 
     mutate(model = fct_relevel(model, rev(c(
@@ -107,7 +107,7 @@ plot_wis <- function(level = "national", add_ae = TRUE){
       y = "Mean WIS/AE",
       x = NULL,
       color = "Model",
-      alpha = "Decomposition of WIS:"
+      alpha = "Decomposition of WIS"
     ) + 
     coord_flip() +
     theme_bw() +
@@ -132,3 +132,35 @@ wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(
   wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5)))
 
 ggsave("figures/scores_wis.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
+
+
+#### 0-7 days back
+
+plot_wis("national", short_horizons = TRUE)
+
+p1 <- plot_wis("national", short_horizons = TRUE) + theme(legend.position = "none") + labs(title = "National level")
+p2 <- plot_wis("states", short_horizons = TRUE) + theme(legend.position = "none") + labs(title = "States")
+p3 <- plot_wis("age", short_horizons = TRUE) + theme(legend.position = "right", legend.justification = "left") + labs(title = "Age groups")
+
+
+df2 <- load_data(add_baseline = FALSE, add_median = FALSE, shorten_names = TRUE, 
+                 fix_data = TRUE, add_truth = TRUE, exclude_missing = TRUE, eval_date = "2022-08-08")
+
+df2 <- df2 %>% 
+  mutate(model = fct_relevel(model, c(
+    "Epiforecasts", "ILM", "KIT",
+    "LMU", "RIVM", "RKI", "SU", "SZ", "MeanEnsemble", "MedianEnsemble"
+  )))
+
+df2 <- df2 %>% 
+  filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
+
+p4 <- plot_coverage_all(df2, "national") + theme(legend.position = "none")
+p5 <- plot_coverage_all(df2, "states") + theme(legend.position = "none")
+p6 <- plot_coverage_all(df2, "age")  + theme(legend.position = "right", legend.justification = "left") 
+
+(p1 + p2 + p3) /
+  (p4 + p5 + p6) & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)
+
+
+ggsave("figures/scores_0-7d.pdf", width = 350, height = 200, unit = "mm", device = "pdf")
