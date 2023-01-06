@@ -87,19 +87,19 @@ plot_wis <- function(level = "national", add_ae = TRUE){
   ggplot() +
     {if (add_ae) geom_point(data = df_ae, aes(x = model, y = score, fill = model), shape = 23)} +
     geom_bar(data = df, aes(x = model, y = score), fill = "white", stat = "identity") + # so you can't see through bars
-    geom_bar(data = scores, aes(x = model, y = value, fill = model, color = model, alpha = penalty), stat = "identity") +
+    geom_bar(data = scores, aes(x = model, y = value, fill = model, alpha = penalty, color = model), size = 0.1, stat = "identity") +
     # geom_label(data = df, aes(x = model, y = 0.1*base_score, label = sprintf("%0.1f", round(score, digits = 1))),
     #            fill = "white", alpha = 0.7, hjust = 1,
     #            label.size = NA, label.r = unit(0, "pt"), size = 9 * 5 / 14,
     #            label.padding = unit(0.1, "lines"),) +
-    geom_label(data = df, aes(x = model, y = score, label = sprintf("%0.1f", round(score, digits = 1))),
-               fill = "white", alpha = 1, hjust = 1.3,
+    geom_label(data = df, aes(x = model, y = 0.5*score, label = sprintf("%0.1f", round(score, digits = 1))),
+               fill = "white", alpha = 1, hjust = 0.5,
                label.r = unit(0.25, "lines"), size = 9 * 5 / 14,
                label.padding = unit(0.15, "lines")) +
     scale_fill_manual(values = MODEL_COLORS, guide = "none") +
     scale_color_manual(values = MODEL_COLORS, guide = "none") +
     scale_alpha_manual(values = c(0.5, 0.2, 1), labels = c("Overprediction", "Spread", "Underprediction"),
-                       guide = guide_legend(reverse = TRUE)) +
+                       guide = guide_legend(reverse = TRUE, title.position="top", title.hjust = 0.5)) +
     scale_y_continuous(name = "Mean WIS / AE", 
                        sec.axis = sec_axis(trans = ~ . / base_score, 
                                            name = paste("Relative", "WIS"))) +
@@ -107,7 +107,7 @@ plot_wis <- function(level = "national", add_ae = TRUE){
       y = "Mean WIS/AE",
       x = NULL,
       color = "Model",
-      alpha = NULL
+      alpha = "Decomposition of WIS:"
     ) + 
     coord_flip() +
     theme_bw() +
@@ -126,5 +126,9 @@ p5 <- plot_wis("age")
 wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
   wrap_elements(p3 + p4 + p4b + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
   wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1))
+
+wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(plot.title = element_text(hjust = 0.5))) /
+  wrap_elements(p3 + p4 + p4b + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5))) /
+  wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5)))
 
 ggsave("figures/scores_wis.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
