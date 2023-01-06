@@ -57,7 +57,7 @@ ggplot(df1) +
   ) +
   geom_line(aes(x = target_end_date, y = truth, color = "Latest")) +
   
-  labs(x = NULL, y = "7-day hospitalization incidence", title = paste("Horizon:", LEAD_TIME, "days (DE, 00+)"))+
+  labs(x = NULL, y = "7-day hospitalization incidence", title = paste("Horizon:", LEAD_TIME, "days (national level, all age groups)"))+
   scale_alpha_manual(name = "Nowcasts with \nprediction intervals:", values = alphas,
                      guide = guide_legend(order = 2, title.position = "top", title.hjust = 0)) +
   scale_color_manual(name = "Truth", values = line_colors,
