@@ -3,7 +3,6 @@ source("utils.R")
 source("fix_submissions.R")
 
 # Load all submissions
-df <- read_csv("data/submissions_2021-11-22_2022-04-29.csv.gz")
 df <- read_csv("data/submissions.csv.gz")
 
 # Add baseline
@@ -27,7 +26,7 @@ template <- df_baseline %>%
   select(- c(value, model, retrospective, pathogen))
 
 # Models that cover all locations and age groups
-models_all <- c("Epiforecasts", "KIT-frozen_baseline", "KIT-simple_nowcast", 
+models_all <- c("Epiforecasts", "KIT-frozen_baseline", "KIT", 
                 "LMU", "MeanEnsemble", "MedianEnsemble", "RIVM", "SU", "SZ")
 
 for (m in models_all) {

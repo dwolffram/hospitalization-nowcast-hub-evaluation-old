@@ -48,7 +48,7 @@ df_files2 <- data.frame(path = files) %>%
   )
 
 df_files2 <- df_files2 %>% 
-  filter(str_detect(path, "Check", negate = TRUE))
+  filter(str_detect(path, "raw", negate = TRUE))
 
 # load all submissions into one dataframe in long format
 df <- data.frame()
