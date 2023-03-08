@@ -1,22 +1,6 @@
 library(tidyverse)
 source("utils.R")
 
-# Quantile score
-qs <- function(q, y, alpha) {
-  2 * (as.numeric(y < q) - alpha) * (q - y)
-}
-
-score <- function(prediction, observation, type, quantile) {
-  if (type == "mean") {
-    return((prediction - observation)^2)
-  } else if (type == "median") {
-    return(abs(prediction - observation))
-  } else if (type == "quantile") {
-    return(qs(prediction, observation, quantile))
-  }
-}
-
-
 df <- load_data(add_baseline = TRUE, add_median = FALSE, shorten_names = TRUE, fix_data = TRUE,
                 add_truth = TRUE, exclude_missing = TRUE, eval_date = "2022-08-08")
 
@@ -85,3 +69,47 @@ df_age <- df_age %>%
             score = mean(score))
 
 write_csv(df_age, paste0("data/wis_age.csv.gz"))
+
+
+
+
+#### 0-7 days
+
+df7 <- df_scores %>% 
+  filter(target %in% paste(0:7*-1, "day ahead inc hosp"))
+
+df_national <- filter_data(df7, level = "national")
+
+df_national <- df_national %>% 
+  group_by(model) %>% 
+  summarize(spread = mean(spread),
+            overprediction = mean(overprediction),
+            underprediction = mean(underprediction),
+            score = mean(score))
+
+write_csv(df_national, paste0("data/wis_national_7d.csv.gz"))
+
+
+
+df_states <- filter_data(df7, level = "states")
+
+df_states <- df_states %>% 
+  group_by(model) %>% 
+  summarize(spread = mean(spread),
+            overprediction = mean(overprediction),
+            underprediction = mean(underprediction),
+            score = mean(score))
+
+write_csv(df_states, paste0("data/wis_states_7d.csv.gz"))
+
+
+df_age <- filter_data(df7, level = "age")
+
+df_age <- df_age %>% 
+  group_by(model) %>% 
+  summarize(spread = mean(spread),
+            overprediction = mean(overprediction),
+            underprediction = mean(underprediction),
+            score = mean(score))
+
+write_csv(df_age, paste0("data/wis_age_7d.csv.gz"))

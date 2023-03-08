@@ -1,21 +1,6 @@
 source("load_truth.R")
 source("utils.R")
 
-# Quantile score
-qs <- function(q, y, alpha) {
-  2 * (as.numeric(y < q) - alpha) * (q - y)
-}
-
-score <- function(prediction, observation, type, quantile) {
-  if (type == "mean") {
-    return((prediction - observation)^2)
-  } else if (type == "median") {
-    return(abs(prediction - observation))
-  } else if (type == "quantile") {
-    return(qs(prediction, observation, quantile))
-  }
-}
-
 load_submissions <- function(start_date = "2021-11-22", end_date = "2022-04-29"){
   df <- read_csv(paste0("data/submissions_", start_date, "_", end_date, ".csv.gz"))
   

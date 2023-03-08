@@ -76,15 +76,11 @@ load_data <- function(add_baseline = TRUE, add_median = FALSE, shorten_names = T
 }
 
 
-filter_scores <- function(df, type = "quantile", level = "national", by_horizon = FALSE, average = TRUE) {
+filter_scores <- function(df, type = "quantile", level = "national", 
+                          by_horizon = FALSE, average = TRUE) {
   df <- df %>%
     filter(type == !!type)
   
-  if (!!type == "quantile") {
-    df <- df %>% 
-      filter(model != "RKI")
-  }
-
   if (level == "national") {
     df <- df %>%
       filter(
@@ -134,25 +130,28 @@ filter_scores <- function(df, type = "quantile", level = "national", by_horizon 
 }
 
 
-load_scores <- function(aggregate_scores = FALSE, # shorten_names = TRUE,
-                        load_baseline = TRUE) {
+load_scores <- function(aggregate_scores = FALSE, load_baseline = TRUE, short_horizons = FALSE) {
   if (aggregate_scores) {
     df <- read_csv(paste0("data/scores_aggregated.csv.gz"), show_col_types = FALSE)
   } else {
     df <- read_csv(paste0("data/scores.csv.gz"))
   }
   
-  # if (shorten_names) {
-  #   df$model <- factor(df$model,
-  #                      levels = sort(unique(df$model)),
-  #                      labels = SHORT_NAMES
-  #   )
-  # }
-  
   if (!load_baseline) {
     df <- df %>%
       filter(model != "KIT-frozen_baseline")
   }
+  
+  if (short_horizons) {
+    df <- df %>%
+      filter(target %in% paste(0:7 * -1, "day ahead inc hosp"))
+  }
+  
+  df <- df %>%
+    mutate(model = fct_relevel(model, rev(c(
+      "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT",
+      "LMU", "RIVM", "RKI", "SU", "SZ", "MeanEnsemble", "MedianEnsemble"
+    ))))
   
   return(df)
 }
@@ -189,28 +188,19 @@ filter_data <- function(df, model, type = "quantile", level = "national") {
   return(df)
 }
 
-# load_scores <- function(start_date = "2021-11-22", end_date = "2022-04-29",
-#                         aggregate_scores = FALSE, shorten_names = TRUE,
-#                         load_baseline = TRUE) {
-#   if (aggregate_scores) {
-#     df <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_aggregated.csv.gz"), show_col_types = FALSE)
-#   } else {
-#     df <- read_csv(paste0("data/scores_", start_date, "_", end_date, ".csv.gz"))
-#     df_baseline <- read_csv(paste0("data/scores_", start_date, "_", end_date, "_baseline.csv.gz"), show_col_types = FALSE)
-#     df <- bind_rows(df, df_baseline)
-#   }
-# 
-#   if (shorten_names) {
-#     df$model <- factor(df$model,
-#       levels = sort(unique(df$model)),
-#       labels = SHORT_NAMES
-#     )
-#   }
-# 
-#   if (!load_baseline) {
-#     df <- df %>%
-#       filter(model != "KIT-frozen_baseline")
-#   }
-# 
-#   return(df)
-# }
+
+# Quantile score
+qs <- function(q, y, alpha) {
+  2 * (as.numeric(y < q) - alpha) * (q - y)
+}
+
+score <- function(prediction, observation, type, quantile) {
+  if (type == "mean") {
+    return((prediction - observation)^2)
+  } else if (type == "median") {
+    return(abs(prediction - observation))
+  } else if (type == "quantile") {
+    return(qs(prediction, observation, quantile))
+  }
+}
+
