@@ -1,11 +1,14 @@
 library(patchwork)
 source("utils.R")
 
+short_horizons = TRUE
+
 df <- data.frame()
 
-for (d in as.list(seq(as.Date("2022-05-10"), as.Date("2022-12-14"), by = 1))) {
+for (d in as.list(seq(as.Date("2022-05-10"), as.Date("2022-12-31"), by = 1))) {
   print(d)
-  filename <- paste0("data/scores_by_date/scores_", d, ".csv.gz")
+  filename <- paste0("data/scores_by_date/scores_", d, 
+                     ifelse(short_horizons, "_7d", ""), ".csv.gz")
   
   if (file.exists(filename)) {
     df_temp <- read_csv(filename, show_col_types = FALSE)
@@ -78,4 +81,8 @@ p4 <- ggplot(df3, aes(x = date, y = truth, color = as_of)) +
 
 (p1 + theme(legend.position = "none") + p2 + p3 + theme(legend.position = "none")  + p4)  + plot_layout(ncol = 2)
 
-ggsave("figures/scores_by_eval_date.pdf", width = 300, height = 200, unit = "mm", device = "pdf")
+# ggsave("figures/scores_by_eval_date.pdf", width = 300, height = 200, unit = "mm", device = "pdf")
+
+
+p1 + theme(legend.position = "none") + p2 + theme(legend.position = "none")  + p3 & theme(aspect.ratio = 1)
+# ggsave("figures/scores_by_eval_date_7d.pdf", width = 300, height = 90, unit = "mm", device = "pdf")
