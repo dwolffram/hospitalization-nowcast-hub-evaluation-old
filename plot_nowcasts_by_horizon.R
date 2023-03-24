@@ -1,7 +1,7 @@
 library(tidyverse)
 source("utils.R")
 
-LEAD_TIME <- 0
+LEAD_TIME <- 14
 
 df <- load_data(add_baseline = TRUE, add_median = FALSE, shorten_names = TRUE, fix_data = TRUE,
                 add_truth = TRUE, exclude_missing = FALSE, eval_date = "2022-08-08")
@@ -62,8 +62,26 @@ ggplot(df1) +
                      guide = guide_legend(order = 2, title.position = "top", title.hjust = 0)) +
   scale_color_manual(name = "Truth", values = line_colors,
                      guide = guide_legend(order = 1, title.position = "top", title.hjust = 0)) +
+  scale_y_continuous(breaks = c(5000, 10000, 15000)) +
+  scale_x_date(breaks = c(as.Date("2021-12-01"), as.Date("2022-02-01"), as.Date("2022-04-01")), minor_breaks = "1 month", date_labels = "%b") +
   # expand_limits(y = 0) +
+  expand_limits(x = c(as.Date("2021-11-22"), as.Date("2022-04-29"))) +
   theme_bw() +
-  coord_cartesian(ylim = c(NA, 17500))
+  #coord_cartesian(ylim = c(NA, 17500)) + # only used for LEAD_TIME = 0
+  theme(title = element_text(size = 9),
+        legend.position = "right",
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 7),
+        legend.key.size = unit(0.65, "lines"),
+        strip.text = element_text(size = 8, margin = margin(b = 2, t = 2)),
+        axis.title.y = element_text(size = 8),
+        axis.text = element_text(size = 7),
+        axis.ticks = element_line(colour = "black", size = 0.25),
+        panel.grid.major = element_line(size = 0.15),
+        panel.grid.minor = element_line(size = 0.1),
+        plot.margin = unit(c(1, 1.5, 0, 1.5), "pt"), 
+        legend.margin = margin(0, 0, 0, 5),
+        legend.box.spacing = unit(0, "pt"),
+        legend.background = element_rect(fill='transparent'))
 
-ggsave(paste0("figures/nowcasts_", LEAD_TIME, "d.pdf"), width = 300, height = 200, unit = "mm", device = "pdf")
+ggsave(paste0("figures/nowcasts_", LEAD_TIME, "d.pdf"), width = 164, height = 100, unit = "mm", device = "pdf")
