@@ -76,21 +76,31 @@ ggplot(df3) +
   geom_ribbon(aes(x = target_end_date, ymin = quantile_0.25, ymax = quantile_0.75, alpha = "50%", fill = model),
   ) +
   scale_alpha_manual(name = "Prediction interval", values = alphas,
-                     guide = guide_legend(order = 2, title.position = "top", title.hjust = 0)) +
+                     guide = guide_legend(order = 3, title.position = "top", title.hjust = 0)) +
   scale_color_manual(name = "Truth", values = line_colors, labels = c("At time of nowcast", "Final"),
                      guide = guide_legend(order = 1, title.position = "top", title.hjust = 0)) +
   scale_fill_manual(breaks = c(
     "Epiforecasts", "ILM", "KIT",
     "LMU", "RIVM", "RKI", "SU", "SZ", "MeanEnsemble"
   ), values = MODEL_COLORS) +
-  guides(fill=guide_legend(title="Model", ncol = 3)) +
+  labs(x = NULL, y = "7-day hospitalization incidence") +
+  guides(fill=guide_legend(order = 2, title="Model", ncol = 1)) +
   theme_bw() +
-  theme(legend.position = "bottom", legend.box.just = "top", 
-        legend.direction = "vertical", legend.box = "horizontal",
-        legend.title = element_text(size = 9), 
-        legend.text  = element_text(size = 8),
-        legend.key.size = unit(0.75, "lines")) +
-  labs(x = NULL, y = "7-day hospitalization incidence")
+  theme(legend.position = "right", legend.box.just = "left", 
+        legend.direction = "vertical", legend.box = "vertical",
+        legend.title = element_text(size = 6), 
+        legend.text  = element_text(size = 6),
+        legend.key.size = unit(0.4, "lines"),
+        axis.title.y = element_text(size = 8),
+        axis.text = element_text(size = 7),
+        strip.text = element_text(size = 8),
+        axis.ticks = element_line(colour = "black", size = 0.25),
+        panel.grid.major = element_line(size = 0.15),
+        panel.grid.minor = element_line(size = 0.1),
+        plot.margin = unit(c(1, 1.5, 0, 1.5), "pt"),
+        legend.margin = margin(0, 0, 0, 5),
+        legend.box.spacing = unit(0, "pt"),
+        legend.background = element_rect(fill='transparent'))
 
 
-ggsave("figures/ensemble_intuition.pdf", width = 150, height = 80, unit = "mm", device = "pdf")
+ggsave("figures/ensemble_intuition.pdf", width = 164, height = 55, unit = "mm", device = "pdf")
