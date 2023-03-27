@@ -208,15 +208,16 @@ plot_wis <- function(level = "national", add_ae = TRUE) {
   
   ggplot() +
     {
-      if (add_ae) geom_point(data = df_ae, aes(x = model, y = score, fill = model), shape = 23)
+      if (add_ae) geom_point(data = df_ae, aes(x = model, y = score, fill = model), shape = 23, size = 0.5)
     } +
     geom_bar(data = df, aes(x = model, y = score), fill = "white", stat = "identity") + # so you can't see through bars
     geom_bar(data = scores, aes(x = model, y = value, fill = model, alpha = penalty, color = model), size = 0.1, stat = "identity") +
     geom_label(
       data = df, aes(x = model, y = 0.5 * score, label = sprintf("%0.1f", round(score, digits = 1))),
       fill = "white", alpha = 1, hjust = 0.5,
-      label.r = unit(0.25, "lines"), size = 9 * 5 / 14,
-      label.padding = unit(0.15, "lines")
+      label.r = unit(0.15, "lines"), # 0.25
+      size = 5/.pt, # 9 * 5 / 14
+      label.padding = unit(0.1, "lines") # 0.15
     ) +
     scale_fill_manual(values = MODEL_COLORS, guide = "none") +
     scale_color_manual(values = MODEL_COLORS, guide = "none") +
@@ -241,10 +242,11 @@ plot_wis <- function(level = "national", add_ae = TRUE) {
     coord_flip() +
     theme_bw() +
     theme(
-      legend.position = "bottom",
-      legend.key.height = unit(0.3, "cm"),
-      legend.key.width = unit(0.3, "cm"),
-      legend.text = element_text(size = 7.5)
+      legend.key.size = unit(0.4, "lines"),
+      legend.position = "bottom"#,
+      # legend.key.height = unit(0.3, "cm"),
+      # legend.key.width = unit(0.3, "cm"),
+      # legend.text = element_text(size = 7.5)
     )
 }
 
@@ -262,10 +264,32 @@ p4 <- plot_coverage_all(df, "national") + theme(legend.position = "none")
 p5 <- plot_coverage_all(df, "states") + theme(legend.position = "none")
 p6 <- plot_coverage_all(df, "age")  + theme(legend.position = "right", legend.justification = "left") 
 
-(p1 + p2 + p3) /
-  (p4 + p5 + p6) & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)
+# (p1 + p2 + p3) /
+#   (p4 + p5 + p6) & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)
+# 
+# ggsave("figures/scores_40d.pdf", width = 350, height = 200, unit = "mm", device = "pdf")
 
-ggsave("figures/scores_40d.pdf", width = 350, height = 200, unit = "mm", device = "pdf")
+t <- list(theme(
+  plot.title = element_text(size = 8, hjust = 0.5, face = "bold"),
+  legend.title = element_text(size = 6), 
+  legend.text  = element_text(size = 5),
+  legend.key.size = unit(0.4, "lines"),
+  axis.title = element_text(size = 7),
+  axis.text = element_text(size = 6),
+  axis.ticks = element_line(colour = "black", size = 0.25),
+  panel.grid.major = element_line(size = 0.15),
+  panel.grid.minor = element_line(size = 0.1),
+  plot.margin = unit(c(2, 4, 10, 2), "pt"), 
+  legend.margin = margin(0, 0, 0, 4),
+  legend.box.spacing = unit(0, "pt"),
+  legend.background = element_rect(fill='transparent')))
+
+((p1 + p2 + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) + p3 + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())) /
+    (p4 + p5 + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) + p6 + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())) & t) + plot_annotation(theme = theme(plot.margin = margin()))
+
+
+
+ggsave("figures/scores_40d.pdf", width = 164, height = 100, unit = "mm", device = "pdf")
 
 
 
