@@ -142,10 +142,16 @@ ggsave("figures/coverage_lines.pdf", width = 300, height = 350, unit = "mm", dev
 
 
 ### Coverage across all horizons
+ALL_MODELS <- c("Epiforecasts", "ILM", "KIT", "LMU", "RIVM", "RKI", 
+                "SU", "SZ", "MeanEnsemble", "MedianEnsemble")
 
 plot_coverage_all <- function(df, level = "national") {
   df <- filter_data(df, type = "quantile", level = level) %>%
     mutate(horizon = as.numeric(str_extract(target, "-?\\d+"))) 
+  
+  df <- df %>%
+    mutate(model = fct_expand(model, ALL_MODELS),
+           model = fct_relevel(model, ALL_MODELS))
   
   df_wide <- df %>%
     pivot_wider(names_from = quantile, values_from = value, names_prefix = "quantile_")
@@ -184,7 +190,7 @@ plot_coverage_all <- function(df, level = "national") {
     ) +
     scale_fill_manual(values = MODEL_COLORS) +
     coord_flip() +
-    scale_x_discrete(limits = rev(unique(coverage_df$model))) +
+    scale_x_discrete(limits = rev, drop = FALSE) +
     guides(fill = "none") +
     scale_alpha_manual(values = alphas) +
     theme_bw() +
@@ -212,6 +218,29 @@ wrap_elements(p4 + p1 + labs(title = NULL) + theme(legend.position = "none") + p
   wrap_elements(p5 + p2 + labs(title = NULL) + theme(legend.position = "none") + plot_layout(widths = c(1, 2)) + plot_annotation(title = "States") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
   wrap_elements(p6 + p3 + labs(title = NULL) + theme(legend.position = "none") + plot_layout(widths = c(1, 2)) + plot_annotation(title = "Age groups") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1))
 
-ggsave("figures/coverage_all.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
+
+t <- list(theme(
+  plot.title = element_text(size = 8, hjust = 0, face = "bold"),
+  legend.title = element_text(size = 6), 
+  legend.text  = element_text(size = 5),
+  legend.key.size = unit(0.4, "lines"),
+  strip.text = element_text(size = 8),
+  axis.title = element_text(size = 7),
+  axis.text = element_text(size = 6),
+  axis.ticks = element_line(colour = "black", size = 0.25),
+  panel.grid.major = element_line(size = 0.15),
+  panel.grid.minor = element_line(size = 0.1),
+  plot.margin = unit(c(2, 7, 2, 2), "pt"), 
+  legend.margin = margin(4, 0, 0, 0),
+  legend.box.spacing = unit(0, "pt"),
+  legend.background = element_rect(fill='transparent')))
+
+wrap_elements(p4 + p1 + labs(title = "National level") + theme(legend.position = "none") + plot_layout(widths = c(1, 2)) + plot_annotation(theme = theme(plot.margin = margin())) & theme(aspect.ratio = 1) & t) /
+  wrap_elements(p5 + p2 + labs(title = "States") + theme(legend.position = "none") + plot_layout(widths = c(1, 2)) + plot_annotation(theme = theme(plot.margin = margin())) & theme(aspect.ratio = 1) & t) /
+  wrap_elements(p6 + p3 + labs(title = "Age groups") + theme(legend.position = "none") + plot_layout(widths = c(1, 2)) + plot_annotation(theme = theme(plot.margin = margin())) & theme(aspect.ratio = 1) & t) 
+
+ggsave("figures/coverage_all.pdf", width = 164, height = 200, unit = "mm", device = "pdf")
+
+# ggsave("figures/coverage_all.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
 # plot_coverage_all(df, "national") + theme(legend.position = c(0.85, 0.15), legend.justification = c(1, 1), legend.box.just = "left")
