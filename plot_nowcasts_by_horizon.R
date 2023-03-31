@@ -1,4 +1,3 @@
-library(tidyverse)
 source("utils.R")
 
 LEAD_TIME <- 14
@@ -38,10 +37,11 @@ line_colors <- setNames(c("firebrick3", "gray"), c("Final", "At time of nowcast"
 
 df1 <- df1 %>% 
   mutate(model = fct_relevel(model, c(
-    "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT",
+    "Epiforecasts", "ILM", "KIT",
     "LMU",
-    "RIVM", "RKI", "SU", "SZ", "MeanEnsemble", "MedianEnsemble"
-  )))
+    "RIVM", "RKI", "SU", "SZ", "KIT-frozen_baseline", "MeanEnsemble", "MedianEnsemble"
+  )), model =  fct_recode(model, FrozenBaseline = "KIT-frozen_baseline")) 
+ 
 
 ggplot(df1) +
   facet_wrap("model", scales = "fixed", ncol = 3) +
@@ -57,7 +57,7 @@ ggplot(df1) +
   ) +
   geom_line(aes(x = target_end_date, y = truth, color = "Final")) +
   
-  labs(x = NULL, y = "7-day hospitalization incidence", title = paste("Horizon:", LEAD_TIME, "days (national level, all age groups)"))+
+  labs(x = NULL, y = "7-day hospitalization incidence", title = paste("Horizon:", LEAD_TIME, "days"))+
   scale_alpha_manual(name = "Nowcasts with \nprediction intervals:", values = alphas,
                      guide = guide_legend(order = 2, title.position = "top", title.hjust = 0)) +
   scale_color_manual(name = "Truth", values = line_colors,
@@ -67,8 +67,8 @@ ggplot(df1) +
   # expand_limits(y = 0) +
   expand_limits(x = c(as.Date("2021-11-22"), as.Date("2022-04-29"))) +
   theme_bw() +
-  #coord_cartesian(ylim = c(NA, 17500)) + # only used for LEAD_TIME = 0
-  theme(title = element_text(size = 9),
+  {if (LEAD_TIME == 0) coord_cartesian(ylim = c(NA, 17500))} + # only used for LEAD_TIME = 0
+  theme(plot.title = element_text(size = 8, hjust = 0.5, face = "bold"),
         legend.position = "right",
         legend.title = element_text(size = 8),
         legend.text = element_text(size = 7),
