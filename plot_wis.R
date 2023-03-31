@@ -112,12 +112,12 @@ p6 <- plot_scores("quantile", "age", by_horizon = TRUE)
 p6b <- plot_scores("quantile", "age", by_horizon = TRUE, relative = TRUE)
 
 wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
-  wrap_elements(p3 + p4 + p4b + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
-  wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1))
+  wrap_elements(p3 + p4 + p4b + plot_annotation(title = "States") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1)) /
+  wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Age groups") & theme(plot.title = element_text(hjust = 0.5), aspect.ratio = 1))
 
 wrap_elements(p1 + p2 + p2b + plot_annotation(title = "National level") & theme(plot.title = element_text(hjust = 0.5))) /
-  wrap_elements(p3 + p4 + p4b + plot_annotation(title = "Average across states") & theme(plot.title = element_text(hjust = 0.5))) /
-  wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Average across age groups") & theme(plot.title = element_text(hjust = 0.5)))
+  wrap_elements(p3 + p4 + p4b + plot_annotation(title = "States") & theme(plot.title = element_text(hjust = 0.5))) /
+  wrap_elements(p5 + p6 + p6b + plot_annotation(title = "Age groups") & theme(plot.title = element_text(hjust = 0.5)))
 
 ggsave("figures/scores_wis.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
@@ -140,10 +140,10 @@ t <- list(theme(
 
 
 (p1 + p2 + labs(title = "National level") + p2b) /
-  (p3 + p4 + labs(title = "Average across states") + p4b) /
-  (p5 + p6 + labs(title = "Average across age groups") + p6b) + plot_annotation(theme = theme(plot.margin = margin())) & t 
+  (p3 + p4 + labs(title = "States") + p4b) /
+  (p5 + p6 + labs(title = "Age groups") + p6b) + plot_annotation(theme = theme(plot.margin = margin())) & t 
 
-ggsave("figures/scores_wis6.pdf", width = 164, height = 200, unit = "mm", device = "pdf")
+ggsave("figures/scores_wis.pdf", width = 164, height = 200, unit = "mm", device = "pdf")
 
 
 #### 0-7 days back
