@@ -157,8 +157,8 @@ t <- list(theme(
 
 
 (p1 + p2 + labs(title = "National level") + p2b) /
-  (p3 + p4 + labs(title = "Average across states") + p4b) /
-  (p5 + p6 + labs(title = "Average across age groups") + p6b) + plot_annotation(theme = theme(plot.margin = margin())) & t 
+  (p3 + p4 + labs(title = "States") + p4b) /
+  (p5 + p6 + labs(title = "Age groups") + p6b) + plot_annotation(theme = theme(plot.margin = margin())) & t 
 
 ggsave("figures/scores_mse.pdf", width = 164, height = 185, unit = "mm", device = "pdf")
 
@@ -183,8 +183,8 @@ p6b <- plot_scores("median", "age", by_horizon = TRUE, relative = TRUE)
 # ggsave("figures/scores_ae.pdf", width = 300, height = 350, unit = "mm", device = "pdf")
 
 (p1 + p2 + labs(title = "National level") + p2b) /
-  (p3 + p4 + labs(title = "Average across states") + p4b) /
-  (p5 + p6 + labs(title = "Average across age groups") + p6b) + plot_annotation(theme = theme(plot.margin = margin())) & t 
+  (p3 + p4 + labs(title = "States") + p4b) /
+  (p5 + p6 + labs(title = "Age groups") + p6b) + plot_annotation(theme = theme(plot.margin = margin())) & t 
 
 ggsave("figures/scores_ae.pdf", width = 164, height = 185, unit = "mm", device = "pdf")
 
