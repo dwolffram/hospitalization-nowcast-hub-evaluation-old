@@ -62,7 +62,15 @@ df <- df %>%
 
 write_csv(df, paste0("data/submissions_updated.csv.gz"))
 
+
+### Compute QS, AE and MSE
+
 df <- read_csv("data/submissions_updated.csv.gz")
+
+df_median <- df %>%
+  filter(quantile == 0.5) %>%
+  mutate(type = "median")
+df <- bind_rows(df, df_median)
 
 df_truth <- load_truth(as_of = "2022-08-08")
 
@@ -77,3 +85,70 @@ df <- df %>%
   select(-c(pathogen, value, truth))
 
 write_csv(df, paste0("data/scores_updated.csv.gz"))
+
+
+### Compute WIS decomposition
+
+df <- read_csv("data/submissions_updated.csv.gz")
+
+df_truth <- load_truth(as_of = "2022-08-08")
+
+df <- df %>%
+  left_join(df_truth, by = c("location", "age_group", "target_end_date" = "date"))
+
+df <- df %>% 
+  filter(type == "quantile")
+
+df_median <- df %>% 
+  filter(quantile == 0.5) %>% 
+  rename(med = value) %>% 
+  select(-c(quantile, pathogen, truth))
+
+df <- df %>%
+  left_join(df_median)
+
+df_scores <- df %>%
+  rowwise() %>%
+  mutate(score = score(value, truth, type, quantile),
+         spread = score(value, med, type, quantile))
+
+df_scores <- df_scores %>% 
+  mutate(overprediction = ifelse(med > truth, score - spread, 0),
+         underprediction = ifelse(med < truth, score - spread, 0))
+
+
+df_national <- filter_data(df_scores, level = "national")
+
+df_national <- df_national %>% 
+  group_by(model) %>% 
+  summarize(spread = mean(spread),
+            overprediction = mean(overprediction),
+            underprediction = mean(underprediction),
+            score = mean(score))
+
+write_csv(df_national, paste0("data/wis_updated_national.csv.gz"))
+
+
+
+df_states <- filter_data(df_scores, level = "states")
+
+df_states <- df_states %>% 
+  group_by(model) %>% 
+  summarize(spread = mean(spread),
+            overprediction = mean(overprediction),
+            underprediction = mean(underprediction),
+            score = mean(score))
+
+write_csv(df_states, paste0("data/wis_updated_states.csv.gz"))
+
+
+df_age <- filter_data(df_scores, level = "age")
+
+df_age <- df_age %>% 
+  group_by(model) %>% 
+  summarize(spread = mean(spread),
+            overprediction = mean(overprediction),
+            underprediction = mean(underprediction),
+            score = mean(score))
+
+write_csv(df_age, paste0("data/wis_updated_age.csv.gz"))
