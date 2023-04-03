@@ -4,12 +4,16 @@ library(patchwork)
 df <- load_data(add_baseline = TRUE, add_median = FALSE, shorten_names = TRUE, fix_data = TRUE,
                 add_truth = FALSE, exclude_missing = TRUE)
 df <- df %>% 
-  filter(model != "ILM")
+  filter(model != "ILM",
+         model != "MeanEnsemble",
+         model != "MedianEnsemble")
 
 df_ILM <- read_csv("data/submissions_updated.csv.gz") %>% 
   filter(model == "ILM")
 
-df <- bind_rows(df, df_ILM)
+df_ensembles <- read_csv("data/ensembles_updated.csv.gz")
+
+df <- bind_rows(df, df_ILM, df_ensembles)
 
 # truth <- load_frozen_truth(lead_time = 40, start_date = "2021-10-01") %>% 
 #   rename(truth = frozen_value)
