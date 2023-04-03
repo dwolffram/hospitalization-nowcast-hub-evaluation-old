@@ -10,8 +10,16 @@ SHORT_NAMES <- c(
 )
 
 MODEL_COLORS <- setNames(
-  c("#B30000", "#E69F00", "#999999", "#56B4E9", "#F0E442", "#009E73", "#60D1B3", "#D55E00", "#3C4AAD", "#CC79A7", "#000000"),
+  c("#B30000", "#E69F00", "#999999", "#56B4E9", "#F0E442", "#009E73", "#60D1B3", "#80471C", "#3C4AAD", "#CC79A7", "#000000"),
   c("Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT", "LMU", "MeanEnsemble", "MedianEnsemble", "RIVM", "RKI", "SU", "SZ")
+)
+
+# brown #80471C
+# old RIVM color #D55E00
+
+TITLES <- setNames(
+  c("National level", "States", "Age groups"),
+  c("national", "states", "age")
 )
 
 
@@ -130,11 +138,12 @@ filter_scores <- function(df, type = "quantile", level = "national",
 }
 
 
-load_scores <- function(aggregate_scores = FALSE, load_baseline = TRUE, short_horizons = FALSE) {
+load_scores <- function(aggregate_scores = FALSE, load_baseline = TRUE, 
+                        short_horizons = FALSE, per_100k = FALSE) {
   if (aggregate_scores) {
     df <- read_csv(paste0("data/scores_aggregated.csv.gz"), show_col_types = FALSE)
   } else {
-    df <- read_csv(paste0("data/scores.csv.gz"))
+    df <- read_csv(paste0("data/scores", ifelse(per_100k, "_100k", ""), ".csv.gz"))
   }
   
   if (!load_baseline) {

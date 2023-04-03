@@ -1,8 +1,9 @@
 source("utils.R")
 library(patchwork)
 
-plot_wis <- function(level = "national", add_ae = TRUE, short_horizons = FALSE) {
-  df <- read_csv(paste0("data/wis_", level, ifelse(short_horizons, "_7d", ""), ".csv.gz"))
+plot_wis <- function(level = "national", add_ae = TRUE, short_horizons = FALSE, per_100k = FALSE) {
+  df <- read_csv(paste0("data/wis_", level, ifelse(short_horizons, "_7d", ""), 
+                        ifelse(per_100k, "_100k", ""), ".csv.gz"))
 
   df <- df %>%
     mutate(model = fct_relevel(model, c(
@@ -23,7 +24,8 @@ plot_wis <- function(level = "national", add_ae = TRUE, short_horizons = FALSE) 
     pivot_longer(cols = c(underprediction, spread, overprediction), names_to = "penalty")
 
   if (add_ae) {
-    df_ae <- load_scores(aggregate_scores = FALSE, load_baseline = FALSE, short_horizons = short_horizons)
+    df_ae <- load_scores(aggregate_scores = FALSE, load_baseline = FALSE, 
+                         short_horizons = short_horizons, per_100k = per_100k)
     df_ae <- df_ae %>%
       mutate(model = fct_relevel(model, c(
         "Epiforecasts", "ILM", "KIT-frozen_baseline", "KIT",

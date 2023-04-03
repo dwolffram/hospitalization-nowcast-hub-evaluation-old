@@ -8,9 +8,10 @@ metrics <- setNames(
 
 plot_scores <- function(type = "quantile", level = "national", 
                         by_horizon = FALSE, relative = FALSE, add_ae = FALSE,
-                        short_horizons = FALSE) {
+                        short_horizons = FALSE, per_100k = FALSE) {
   
-  df <- load_scores(aggregate_scores = FALSE, load_baseline = TRUE, short_horizons = short_horizons) 
+  df <- load_scores(aggregate_scores = FALSE, load_baseline = TRUE, 
+                    short_horizons = short_horizons, per_100k = per_100k) 
   scores <- filter_scores(df, type, level, by_horizon)
   metric <- metrics[type]
   ylabel <- if (relative) paste("Relative", metric) else paste("Mean", metric)
